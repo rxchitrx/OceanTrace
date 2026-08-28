@@ -208,7 +208,42 @@ Every case should record:
 
 ## Running status
 
-This repository currently contains the project documentation and implementation plan. The application code will be added incrementally, beginning with the dependency gate described in [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md).
+The repository now contains a Phase 1 implementation scaffold:
+
+- `services/api/` contains the FastAPI entrypoint, case runner, detector baseline, drift search, AIS processing, and ranking logic.
+- `apps/web/` contains a Vite + React investigation workspace shell for the controlled demo.
+- `data/cases/arabian_sea_demo/` contains deterministic local inputs for the golden-case walkthrough.
+- `tests/` contains baseline detector, drift, AIS, ranking, and golden-case checks.
+
+The current implementation is deliberately lightweight and deterministic so the complete demo can run from local files before heavier model or dataset integration.
+
+## Quick start
+
+### Backend
+
+```bash
+pip install -r requirements.txt
+python scripts/run_case.py
+uvicorn services.api.main:app --reload
+```
+
+### Frontend
+
+```bash
+cd apps/web
+npm install
+npm run dev
+```
+
+### Available API routes
+
+```text
+GET  /api/health
+GET  /api/cases
+GET  /api/cases/{case_id}
+POST /api/cases/{case_id}/run
+GET  /api/cases/{case_id}/results/{run_id}
+```
 
 ## Scientific and legal boundaries
 

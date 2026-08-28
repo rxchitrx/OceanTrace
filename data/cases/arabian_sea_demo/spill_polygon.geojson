@@ -1,0 +1,18 @@
+{
+  "type": "Feature",
+  "properties": {
+    "name": "candidate_slick"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [68.95, 18.92],
+        [69.08, 18.95],
+        [69.11, 19.03],
+        [68.99, 19.06],
+        [68.95, 18.92]
+      ]
+    ]
+  }
+}

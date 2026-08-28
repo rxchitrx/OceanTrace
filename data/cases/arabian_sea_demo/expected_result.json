@@ -1,0 +1,6 @@
+{
+  "expected_top_vessel_id": "vessel_a",
+  "expected_release_window_start": "2026-01-14T03:00:00Z",
+  "expected_release_window_end": "2026-01-14T09:00:00Z",
+  "known_true_source_vessel_id": "vessel_a"
+}

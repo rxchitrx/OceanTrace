@@ -1,0 +1,17 @@
+{
+  "id": "dartis_validation",
+  "region": "Reference Validation Scene",
+  "observation_time": "2025-06-01T09:30:00Z",
+  "image_path": "image/sar.png",
+  "spill_polygon": "annotations/detection_mask.geojson",
+  "forcing": {
+    "wind_path": "../arabian_sea_demo/wind.json",
+    "current_path": "../arabian_sea_demo/currents.json"
+  },
+  "ais_path": "../arabian_sea_demo/ais.csv",
+  "scenario_type": "detection_validation",
+  "notes": [
+    "Placeholder public validation case structure",
+    "Do not redistribute restricted datasets without checking the license"
+  ]
+}

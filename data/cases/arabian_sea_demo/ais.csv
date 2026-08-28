@@ -1,0 +1,15 @@
+vessel_id,name,mmsi,timestamp,latitude,longitude,speed_over_ground,course_over_ground,vessel_type
+vessel_a,MV Ocean Star,419000111,2026-01-14T02:00:00Z,18.77,68.88,11.8,42,tanker
+vessel_a,MV Ocean Star,419000111,2026-01-14T04:00:00Z,18.80,68.91,12.0,44,tanker
+vessel_a,MV Ocean Star,419000111,2026-01-14T06:00:00Z,18.83,68.95,12.1,45,tanker
+vessel_a,MV Ocean Star,419000111,2026-01-14T08:00:00Z,18.87,68.99,12.0,47,tanker
+vessel_a,MV Ocean Star,419000111,2026-01-14T10:00:00Z,18.90,69.03,11.7,48,tanker
+vessel_b,MV Coastal Trader,419000222,2026-01-14T02:00:00Z,18.89,69.10,10.2,91,cargo
+vessel_b,MV Coastal Trader,419000222,2026-01-14T04:00:00Z,18.96,69.11,10.1,96,cargo
+vessel_b,MV Coastal Trader,419000222,2026-01-14T06:00:00Z,19.04,69.12,9.8,101,cargo
+vessel_b,MV Coastal Trader,419000222,2026-01-14T08:00:00Z,19.11,69.13,9.9,102,cargo
+vessel_b,MV Coastal Trader,419000222,2026-01-14T10:00:00Z,19.17,69.14,10.0,100,cargo
+vessel_c,MV Horizon,419000333,2026-01-13T20:00:00Z,18.50,68.30,13.4,220,bulk_carrier
+vessel_c,MV Horizon,419000333,2026-01-13T22:00:00Z,18.42,68.22,13.2,221,bulk_carrier
+vessel_c,MV Horizon,419000333,2026-01-14T00:00:00Z,18.35,68.15,13.0,219,bulk_carrier
+vessel_c,MV Horizon,419000333,2026-01-14T10:00:00Z,18.00,67.80,13.1,223,bulk_carrier

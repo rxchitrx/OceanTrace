@@ -1,0 +1,23 @@
+{
+  "id": "arabian_sea_demo",
+  "region": "Arabian Sea",
+  "observation_time": "2026-01-14T12:00:00Z",
+  "image_path": "sar.png",
+  "spill_polygon": "spill_polygon.geojson",
+  "forcing": {
+    "wind_path": "wind.json",
+    "current_path": "currents.json"
+  },
+  "ais_path": "ais.csv",
+  "scenario_type": "controlled_demo",
+  "ais_type": "simulated",
+  "forcing_type": "archived_snapshot",
+  "coordinate_reference_system": "EPSG:4326",
+  "random_seed": 26143,
+  "true_source_vessel_id": "vessel_a",
+  "notes": [
+    "Controlled demonstration scenario",
+    "AIS tracks: simulated",
+    "Output: investigative lead, not legal attribution"
+  ]
+}
