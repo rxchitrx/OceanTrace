@@ -1,40 +1,18 @@
-from datetime import datetime, timezone
-
-from services.api.ranking.scorer import score_vessels
+from services.api.case_runner import run_case
 
 
-def test_ranking_prefers_nearer_track_with_release_match():
-    tracks = {
-        "vessel_a": [
-            {
-                "name": "A",
-                "mmsi": "1",
-                "vessel_type": "tanker",
-                "timestamp": "2026-01-14T04:00:00Z",
-                "latitude": "18.9",
-                "longitude": "69.0",
-                "course_over_ground": "45",
-            }
-        ],
-        "vessel_b": [
-            {
-                "name": "B",
-                "mmsi": "2",
-                "vessel_type": "cargo",
-                "timestamp": "2026-01-13T20:00:00Z",
-                "latitude": "17.0",
-                "longitude": "66.0",
-                "course_over_ground": "220",
-            }
-        ],
-    }
-    ranked = score_vessels(
-        tracks,
-        {"vessel_a": [], "vessel_b": []},
-        {"latitude": 18.91, "longitude": 69.01},
-        {
-            "start": datetime(2026, 1, 14, 3, 0, tzinfo=timezone.utc),
-            "end": datetime(2026, 1, 14, 9, 0, tzinfo=timezone.utc),
-        },
-    )
-    assert ranked[0]["vessel_id"] == "vessel_a"
+def test_golden_case_ranks_source_track_above_nearest_observation_track():
+    result = run_case("arabian_sea_demo", seed=26143)
+
+    assert result.vessels[0].vessel_id == "vessel_a"
+    assert result.vessels[0].components["origin_region_overlap"] > 0.7
+    assert result.vessels[0].components["drift_consistency"] > 0.7
+    assert result.vessels[1].vessel_id == "vessel_b"
+    assert result.vessels[0].lead_score > result.vessels[1].lead_score + 20
+
+
+def test_long_ais_gap_is_reported_only_when_window_overlaps():
+    result = run_case("arabian_sea_demo", seed=26143)
+    vessel_c = next(vessel for vessel in result.vessels if vessel.vessel_id == "vessel_c")
+
+    assert any("AIS gap" in warning for warning in vessel_c.warnings)

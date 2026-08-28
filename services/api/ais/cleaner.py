@@ -14,15 +14,26 @@ def load_ais_rows(path: Path) -> List[Dict[str, str]]:
 
 def validate_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
     cleaned: List[Dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
     for row in rows:
-        latitude = float(row["latitude"])
-        longitude = float(row["longitude"])
-        sog = float(row["speed_over_ground"])
+        try:
+            latitude = float(row["latitude"])
+            longitude = float(row["longitude"])
+            sog = float(row["speed_over_ground"])
+            course = float(row["course_over_ground"])
+            datetime.fromisoformat(row["timestamp"].replace("Z", "+00:00"))
+        except (KeyError, TypeError, ValueError):
+            continue
         if not (-90 <= latitude <= 90 and -180 <= longitude <= 180):
             continue
         if sog < 0 or sog > 45:
             continue
-        datetime.fromisoformat(row["timestamp"].replace("Z", "+00:00"))
+        if not (0 <= course <= 360):
+            continue
+        identity = (row["vessel_id"], row["timestamp"])
+        if identity in seen:
+            continue
+        seen.add(identity)
         cleaned.append(row)
     cleaned.sort(key=lambda row: (row["vessel_id"], row["timestamp"]))
     return cleaned

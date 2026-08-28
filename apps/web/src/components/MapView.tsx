@@ -1,36 +1,38 @@
-import React, { useEffect } from "react";
+import { Fragment, useEffect } from "react";
+import type { GeoJsonObject } from "geojson";
 import {
-  MapContainer,
-  TileLayer,
-  GeoJSON,
-  Polyline,
   CircleMarker,
+  GeoJSON,
   ImageOverlay,
+  MapContainer,
+  Polyline,
   Popup,
+  TileLayer,
   useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import type { AnalysisResult, AisPoint } from "../types";
+import type { AisPoint, AnalysisResult, GeoJsonFeature, SarBounds } from "../types";
 
 type MapViewProps = {
   result: AnalysisResult | null;
-  spillPolygon: any | null;
-  sarBounds: any | null;
-  sarImageUrl: string | null;
+  spillPolygon: GeoJsonFeature;
+  sarBounds: SarBounds;
+  sarImageUrl: string;
   selectedVesselId: string | null;
   onVesselSelect: (vesselId: string) => void;
   layers: string[];
-  aisTracks: Record<string, AisPoint[]> | null;
+  aisTracks: Record<string, AisPoint[]>;
+  currentTime: string | null;
 };
 
-function MapFitter({ bounds }: { bounds: [[number, number], [number, number]] | null }) {
+function MapFitter({ bounds }: { bounds: [[number, number], [number, number]] }) {
   const map = useMap();
-  useEffect(() => {
-    if (bounds) {
-      map.fitBounds(bounds, { padding: [50, 50] });
-    }
-  }, [bounds, map]);
+  useEffect(() => { map.fitBounds(bounds, { padding: [36, 36] }); }, [bounds, map]);
   return null;
+}
+
+function geoJson(data: unknown) {
+  return data as GeoJsonObject;
 }
 
 export function MapView({
@@ -42,140 +44,89 @@ export function MapView({
   onVesselSelect,
   layers,
   aisTracks,
+  currentTime,
 }: MapViewProps) {
-  const defaultCenter: [number, number] = [18.95, 69.0];
-
-  let boundsToFit: [[number, number], [number, number]] | null = null;
-  if (sarBounds) {
-    boundsToFit = [
-      [sarBounds.south, sarBounds.west],
-      [sarBounds.north, sarBounds.east],
-    ];
-  } else if (spillPolygon) {
-    const coords = spillPolygon.geometry.coordinates[0];
-    const lats = coords.map((c: any) => c[1]);
-    const lons = coords.map((c: any) => c[0]);
-    boundsToFit = [
-      [Math.min(...lats), Math.min(...lons)],
-      [Math.max(...lats), Math.max(...lons)],
-    ];
-  }
-
-  const showSar = layers.includes("sar_image") && sarImageUrl && sarBounds;
-  const showPolygon = layers.includes("spill_polygon") && spillPolygon;
-  const showHeatmap = layers.includes("source_heatmap") && result;
-  const showParticles = layers.includes("particle_paths") && result;
-  const showAis = layers.includes("ais_tracks") && result;
+  const bounds: [[number, number], [number, number]] = [
+    [sarBounds.south, sarBounds.west],
+    [sarBounds.north, sarBounds.east],
+  ];
+  const source = result?.source_region;
+  const cutoff = currentTime ? new Date(currentTime).getTime() : Number.POSITIVE_INFINITY;
 
   return (
-    <div style={{ height: "100%", width: "100%", borderRadius: "18px", overflow: "hidden", position: "absolute", top: 0, left: 0 }}>
-      <MapContainer
-        center={defaultCenter}
-        zoom={10}
-        style={{ height: "100%", width: "100%", backgroundColor: "#081317" }}
-      >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; OpenStreetMap &copy; CARTO'
-        />
+    <MapContainer center={[18.95, 69]} zoom={9} zoomControl={false} attributionControl>
+      <TileLayer
+        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; OpenStreetMap contributors'
+      />
+      <MapFitter bounds={bounds} />
 
-        <MapFitter bounds={boundsToFit} />
+      {layers.includes("sar_image") && <ImageOverlay url={sarImageUrl} bounds={bounds} opacity={0.82} />}
 
-        {showSar && (
-          <ImageOverlay
-            url={sarImageUrl}
-            bounds={[
-              [sarBounds.south, sarBounds.west],
-              [sarBounds.north, sarBounds.east],
-            ]}
-            opacity={0.8}
+      {layers.includes("spill_polygon") && (
+        <>
+          <GeoJSON
+            data={geoJson(spillPolygon)}
+            style={{ color: "#f1b24b", weight: 1.5, dashArray: "7 5", fillColor: "#f1b24b", fillOpacity: 0.08 }}
           />
-        )}
+          {result && (
+            <GeoJSON
+              data={geoJson(result.detector.polygon)}
+              style={{ color: "#f7f3e8", weight: 2.5, fillColor: "#0b1012", fillOpacity: 0.28 }}
+            />
+          )}
+        </>
+      )}
 
-        {showHeatmap && (
-          <>
-            <GeoJSON
-              data={result.source_region.low_probability}
-              style={{ color: "#d17c48", weight: 0, fillColor: "#d17c48", fillOpacity: 0.2 }}
-            />
-            <GeoJSON
-              data={result.source_region.medium_probability}
-              style={{ color: "#d17c48", weight: 0, fillColor: "#d17c48", fillOpacity: 0.4 }}
-            />
-            <GeoJSON
-              data={result.source_region.high_probability}
-              style={{ color: "#d17c48", weight: 0, fillColor: "#d17c48", fillOpacity: 0.6 }}
-            />
-            {result.source_region.heatmap_points.map((pt, i) => (
-              <CircleMarker
-                key={i}
-                center={[pt.latitude, pt.longitude]}
-                radius={pt.weight * 10}
-                pathOptions={{ color: "#fff", weight: 1, fillColor: "#d17c48", fillOpacity: 0.8 }}
-              />
-            ))}
-          </>
-        )}
-
-        {showParticles &&
-          result.particles.map((path, idx) => (
-            <Polyline
-              key={`particle-${idx}`}
-              positions={path.points.map((p) => [p.latitude, p.longitude])}
-              pathOptions={{ color: "#ff8e78", weight: 2, dashArray: "4 4", opacity: 0.6 }}
+      {layers.includes("source_heatmap") && source && (
+        <>
+          <GeoJSON data={geoJson(source.low_probability)} style={{ color: "#ff6b35", weight: 1, fillColor: "#ff6b35", fillOpacity: 0.12 }} />
+          <GeoJSON data={geoJson(source.medium_probability)} style={{ color: "#ff8f3f", weight: 1, fillColor: "#ff8f3f", fillOpacity: 0.22 }} />
+          <GeoJSON data={geoJson(source.high_probability)} style={{ color: "#ffb15b", weight: 1.5, fillColor: "#ff9f43", fillOpacity: 0.38 }} />
+          {source.heatmap_points.filter((point) => point.weight >= 0.8).map((point, index) => (
+            <CircleMarker
+              key={`${point.release_time}-${index}`}
+              center={[point.latitude, point.longitude]}
+              radius={3 + point.weight * 4}
+              pathOptions={{ color: "#fff1d2", weight: 1, fillColor: "#ff7a36", fillOpacity: 0.85 }}
             />
           ))}
+        </>
+      )}
 
-        {showPolygon && (
-          <GeoJSON
-            data={spillPolygon}
-            style={{ color: "#000", weight: 2, dashArray: "5 5", fillColor: "#1f2325", fillOpacity: 0.7 }}
-          />
-        )}
+      {layers.includes("particle_paths") && result?.particles.map((path) => (
+        <Polyline
+          key={path.vessel_id}
+          positions={path.points.map((point) => [point.latitude, point.longitude])}
+          pathOptions={{ color: "#ff9f43", weight: 1.5, dashArray: "5 6", opacity: 0.62 }}
+        />
+      ))}
 
-        {showAis &&
-          aisTracks &&
-          Object.entries(aisTracks).map(([vesselId, trackPoints]) => {
-            const isSelected = selectedVesselId === vesselId;
-            const trackColor = vesselId === "vessel_a" ? "#58d8ba" : vesselId === "vessel_b" ? "#ffdb71" : "#cdd8e2";
-            return (
-              <React.Fragment key={vesselId}>
-                <Polyline
-                  positions={trackPoints.map((pt) => [pt.latitude, pt.longitude])}
-                  pathOptions={{
-                    color: trackColor,
-                    weight: isSelected ? 4 : 2,
-                    opacity: isSelected ? 1.0 : 0.6,
-                  }}
-                  eventHandlers={{
-                    click: () => onVesselSelect(vesselId),
-                  }}
-                >
-                  <Popup>
-                    <strong>{trackPoints[0].name}</strong><br />
-                    MMSI: {trackPoints[0].mmsi}<br />
-                    Type: {trackPoints[0].vessel_type}
-                  </Popup>
-                </Polyline>
-                {trackPoints.map((pt, idx) => (
-                  <CircleMarker
-                    key={`${vesselId}-${idx}`}
-                    center={[pt.latitude, pt.longitude]}
-                    radius={isSelected ? 5 : 3}
-                    pathOptions={{
-                      color: trackColor,
-                      fillColor: trackColor,
-                      fillOpacity: 1.0,
-                    }}
-                    eventHandlers={{
-                      click: () => onVesselSelect(vesselId),
-                    }}
-                  />
-                ))}
-              </React.Fragment>
-            );
-          })}
-      </MapContainer>
-    </div>
+      {layers.includes("ais_tracks") && result && Object.entries(aisTracks).map(([vesselId, rawTrack], trackIndex) => {
+        const track = rawTrack.filter((point) => new Date(point.timestamp).getTime() <= cutoff);
+        if (track.length === 0) return null;
+        const selected = selectedVesselId === vesselId;
+        const colors = ["#36d2b4", "#77aafc", "#a3aab1"];
+        const color = colors[trackIndex % colors.length];
+        const last = track[track.length - 1];
+        return (
+          <Fragment key={vesselId}>
+            <Polyline
+              positions={track.map((point) => [point.latitude, point.longitude])}
+              pathOptions={{ color, weight: selected ? 4 : 2.3, opacity: selected ? 1 : 0.72 }}
+              eventHandlers={{ click: () => onVesselSelect(vesselId) }}
+            />
+            <CircleMarker
+              center={[last.latitude, last.longitude]}
+              radius={selected ? 7 : 5}
+              pathOptions={{ color: "#071013", weight: 2, fillColor: color, fillOpacity: 1 }}
+              eventHandlers={{ click: () => onVesselSelect(vesselId) }}
+            >
+              <Popup><strong>{last.name}</strong><br />MMSI {last.mmsi}<br />{last.vessel_type.replaceAll("_", " ")}</Popup>
+            </CircleMarker>
+          </Fragment>
+        );
+      })}
+    </MapContainer>
   );
 }

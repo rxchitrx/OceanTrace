@@ -1,603 +1,323 @@
-# OCEANTRACE Phase 1 Implementation Plan
+# OceanTrace Phase 1 Implementation Plan and Completion Record
 
-## 1. Objective
+## 1. Goal
 
-Build a reliable internal-college-phase prototype for SIH26143 that demonstrates this complete workflow:
-
-```text
-Satellite image
-      ↓
-Possible slick detected
-      ↓
-Look-alikes and uncertainty exposed
-      ↓
-Probable source region reconstructed
-      ↓
-AIS vessel trajectories correlated
-      ↓
-Investigative leads ranked with reasons
-```
-
-The prototype must be deterministic, explainable, and demoable from local files. It must not depend on a live API during judging.
-
-## 2. Definition of success
-
-The prototype is complete when a reviewer can:
-
-1. Open the application.
-2. Select one preloaded case.
-3. View the SAR scene and candidate slick.
-4. Run or replay source reconstruction.
-5. See an uncertainty-aware source heatmap.
-6. View at least three vessel trajectories.
-7. See a ranked candidate list.
-8. Open a candidate and understand why it ranked there.
-9. See data-quality warnings and model limitations.
-10. Re-run the same case and receive the same result.
-
-The target is a persuasive 5–7 minute demo, not production readiness.
-
-## 3. Scope decisions
-
-### Must build
-
-- One end-to-end controlled case.
-- Candidate slick polygon and SAR image overlay.
-- Particle-based source reconstruction.
-- Source-region heatmap.
-- Three AIS-like vessel tracks.
-- Transparent ranking score.
-- Evidence explanations.
-- Uncertainty and data-quality labels.
-- Local offline fallback.
-- Basic evaluation and golden-case tests.
-
-### Build if the core path is stable
-
-- A second detection-only case from DARTIS or CSIRO.
-- A real archived wind/current snapshot.
-- Forward validation from candidate vessel routes.
-- Look-alike filtering.
-- Non-vessel source markers such as ports, platforms, or pipelines.
-- Optional OpenDrift adapter.
-
-### Defer
-
-- Live global AIS.
-- Real-time Sentinel-1 ingestion.
-- Dark-vessel deep-learning detection.
-- Chemical fingerprinting.
-- Full oil-weathering chemistry.
-- Neural trajectory prediction.
-- Large transformer segmentation.
-- Cloud deployment and production authentication.
-
-## 4. Data strategy
-
-### Case A: end-to-end golden case
-
-Use a controlled Indian-coast or Arabian Sea scenario:
-
-- SAR image or SAR-derived raster.
-- Observation timestamp.
-- Spill polygon.
-- Archived or controlled wind field.
-- Archived or controlled current field.
-- Three vessel tracks.
-- Known simulated source vessel.
-- Expected source region and expected top candidate.
-
-The case manifest must state which assets are real and which are simulated.
-
-Example metadata:
-
-```json
-{
-  "id": "arabian-sea-demo-01",
-  "region": "Arabian Sea",
-  "scenario_type": "controlled_demo",
-  "observation_time": "2026-01-14T12:00:00Z",
-  "ais_type": "simulated",
-  "forcing_type": "archived_snapshot",
-  "coordinate_reference_system": "EPSG:4326",
-  "random_seed": 26143
-}
-```
-
-### Case B: detection validation
-
-Use a public labelled image for detector validation. Prefer an asset that can be downloaded individually and whose licence is compatible with the project.
-
-For DARTIS, object annotations may need to be converted into an approximate polygon. Treat that as a prototype approximation and do not describe it as a perfect segmentation mask.
-
-### Data fallback order
-
-If a dependency fails:
-
-1. Use an archived local forcing snapshot.
-2. Use a controlled synthetic vector field.
-3. Use locally generated vessel tracks.
-4. Use a precomputed analysis result for the presentation.
-
-The fallback must be visible in the case metadata.
-
-## 5. System architecture
+Deliver a reliable 5–7 minute internal-college SIH demonstration for problem statement SIH26143:
 
 ```text
-┌──────────────────────────────────────────┐
-│ React dashboard                          │
-│ case selection · map · timeline · scores │
-└──────────────────┬───────────────────────┘
-                   │ JSON/GeoJSON API
-┌──────────────────▼───────────────────────┐
-│ FastAPI case runner                       │
-│ validation · orchestration · run metadata │
-└───────┬──────────────┬──────────────┬─────┘
-        ▼              ▼              ▼
-   SAR detector    Drift engine    AIS engine
-        └──────────────┬──────────────┘
-                       ▼
-              Evidence/ranking engine
-                       ▼
-             AnalysisResult JSON/GeoJSON
+Satellite observation
+        ↓
+Candidate slick detection
+        ↓
+Uncertainty-aware source reconstruction
+        ↓
+AIS trajectory correlation
+        ↓
+Explainable investigative leads
 ```
 
-### Storage approach
+The prototype must be deterministic, run from local case files, distinguish real and synthetic inputs, and avoid legal-attribution claims.
 
-Keep Phase 1 storage simple:
+## 2. Phase 1 definition of done
 
-- Case inputs in `data/cases/<case-id>/`.
-- Generated outputs in a local generated-results directory.
-- SQLite only if run history is required.
-- No remote database requirement.
+A reviewer must be able to:
 
-## 6. Data contracts
+1. Start the API and dashboard locally.
+2. Open one complete end-to-end controlled case.
+3. View a SAR raster and candidate slick outline.
+4. execute pixel-based detection.
+5. Reconstruct a source region and release window.
+6. View at least three AIS vessel tracks.
+7. See a stable, evidence-based ranking.
+8. Inspect numerical components, reasons, and warnings.
+9. Run a separate real-SAR detector validation case.
+10. Re-run the same seed and receive the same result.
+11. Complete the automated test and production-build checks.
 
-### Required case inputs
+## 3. Scope boundary
+
+### Included and complete
+
+- Local controlled Arabian Sea case.
+- Real Sentinel-1-derived DARTIS validation patch.
+- Classical, explainable SAR dark-region detector.
+- Pascal VOC bounding-box evaluation.
+- Wind/current/windage particle ensemble.
+- Reverse source hypotheses plus independent forward validation.
+- AIS cleaning, short-gap interpolation, and long-gap warnings.
+- Five-component transparent vessel ranking.
+- FastAPI case/result API.
+- Responsive React/Leaflet investigation console.
+- Explicit provenance and legal/scientific limitations.
+- Unit, integration, API, and deterministic golden-case tests.
+
+### Explicitly deferred
+
+- Live Sentinel-1 ingestion.
+- Live or restricted Indian AIS access.
+- Operational ERA5, Copernicus Marine, or INCOIS ingestion.
+- Learned segmentation model training.
+- Oil-weathering chemistry.
+- Ports, platforms, pipelines, and natural-seep candidate sources.
+- Authentication, multi-user storage, cloud deployment, and audit logging.
+- Calibrated attribution probability or legal responsibility assessment.
+
+## 4. Delivered system
 
 ```text
-case.json
-sar.png or sar.tif
-spill_polygon.geojson
-wind.json or wind.nc
-currents.json or currents.nc
-ais.csv
+┌─────────────────────────────────────────────┐
+│ React investigation console                 │
+│ case · map layers · timeline · explanations │
+└────────────────────┬────────────────────────┘
+                     │ JSON / GeoJSON
+┌────────────────────▼────────────────────────┐
+│ FastAPI orchestration and Pydantic contracts│
+└────────┬────────────────┬───────────────────┘
+         ▼                ▼
+  SAR detector      controlled full case
+  + VOC metric       ├─ particle ensemble
+                     ├─ AIS features
+                     └─ evidence ranking
+                              │
+                              ▼
+                  deterministic result JSON
 ```
 
-### AIS schema
+### Storage
 
-```text
-vessel_id
-name
-mmsi
-timestamp
-latitude
-longitude
-speed_over_ground
-course_over_ground
-vessel_type
-```
+- Inputs: `data/cases/<case_id>/`
+- Generated results: `generated/<case_id>-seed-<seed>.json`
+- No database or network data service is required.
 
-### Analysis result schema
+## 5. Data contracts
 
-```json
-{
-  "run_id": "fixed-seed-run-001",
-  "detector": {
-    "candidate_polygon": {},
-    "candidate_score": 0.81,
-    "method": "baseline_threshold"
-  },
-  "release_window": {
-    "start": "2026-01-14T03:00:00Z",
-    "end": "2026-01-14T09:00:00Z",
-    "confidence_band": "moderate"
-  },
-  "source_region": {},
-  "particles": {},
-  "vessels": [],
-  "warnings": []
-}
-```
+### Case manifest
 
-Use a fixed random seed in the golden case. Every result should include method names, timestamps, data provenance, and warnings.
+Each `case.json` records:
 
-## 7. Module implementation details
+- Stable case identifier and observation time.
+- SAR image and geographic bounds.
+- Reference polygon and optional annotation.
+- Optional forcing and AIS paths.
+- Scenario, AIS, and forcing types.
+- CRS and fixed random seed.
+- Human-readable notes and data sources.
 
-### 7.1 SAR candidate detector
+Two modes are supported:
 
-Implement the baseline in this order:
+| Scenario type | Analysis mode | Required inputs |
+|---|---|---|
+| `controlled_demo` | `full` | image, bounds, polygon, wind, current, AIS |
+| `detection_validation` | `detection_only` | image, bounds, polygon, annotation |
 
-1. Read the raster.
-2. Normalize intensity using robust percentiles.
-3. Apply median or Gaussian smoothing.
-4. Mask land, borders, and invalid pixels.
-5. Detect dark candidate regions using an adaptive threshold.
+### Analysis result
+
+Every result includes:
+
+- `run_id`, mode, seed, case metadata, and warnings.
+- Detector polygon, method, score, and pixel features.
+- Optional reference-annotation evaluation.
+- Optional release window, source region, particles, and vessel list.
+- Input data-source metadata and drift diagnostics.
+
+## 6. Implementation details
+
+### 6.1 Detection
+
+Implemented in `services/api/detection/baseline_detector.py`:
+
+1. Convert the image to grayscale and median-filter speckle.
+2. Normalize with the 1st and 99th percentiles.
+3. Estimate local signal and broad background.
+4. Threshold positive local darkness adaptively.
+5. Remove borders and apply close/open/fill morphology.
 6. Extract connected components.
-7. Remove regions that are too small, too narrow, border-connected, or geometrically implausible.
-8. Compute area, perimeter, elongation, orientation, mean intensity, and texture.
-9. Return a candidate polygon and heuristic score.
+7. Measure area, perimeter, fill ratio, elongation, orientation, intensity, and contrast.
+8. Score and georeference the strongest coherent candidate.
+9. For labelled cases, compare its pixel bbox with oil-object bboxes from Pascal VOC XML.
 
-The baseline should produce a useful result on the golden case even if a learned model is not ready.
+The heuristic confidence is not called an oil probability.
 
-Do not call the heuristic score a calibrated probability.
+### 6.2 Drift and source search
 
-### 7.2 Drift engine
+Implemented in `services/api/drift/`:
 
-Inputs:
+- Forcing inputs declare `m/s` units and uncertainty.
+- Advection converts metre displacement to latitude/longitude using Earth radius and latitude correction.
+- The controlled case uses five release hours, three windage values, and twelve perturbations: 180 hypotheses.
+- A fixed random seed makes perturbations reproducible.
+- Each hypothesis starts from a reverse-advection source estimate.
+- Independent forward advection measures whether it reaches the observed slick.
+- Weighted hypotheses generate the centroid, covariance-based probability regions, heatmap, release band, and representative paths.
 
-- Observed slick polygon.
-- Observation timestamp.
-- Wind field.
-- Current field.
-- Release-time search interval.
-- Windage range.
-- Diffusion/uncertainty settings.
+### 6.3 AIS processing
 
-Algorithm:
+Implemented in `services/api/ais/`:
 
-1. Expand the observed slick polygon by a search buffer.
-2. Generate source hypotheses on a spatial grid.
-3. Generate release-time hypotheses, initially up to 12 hours before observation.
-4. Seed particles at each hypothesis.
-5. Forward-simulate particles to the observation time.
-6. Perturb wind, current, and windage for an ensemble.
-7. Compare each simulated slick with the observed slick.
-8. Retain and aggregate the strongest hypotheses.
-9. Convert hypothesis weights into a source heatmap.
-10. Run a future forecast from the highest-ranked source region if time allows.
+- Parse and validate timestamps, coordinates, speed, and course.
+- Remove duplicate records and sort by vessel/time.
+- Group tracks and interpolate only bounded short gaps.
+- Preserve long gaps for evidence warnings.
+- Interpolate vessel position at each candidate release time.
+- Compute source distance, bearing/course compatibility, release coverage, and trajectory consistency.
 
-Initial parameters:
+### 6.4 Ranking
+
+Implemented in `services/api/ranking/`:
 
 ```text
-time step: 15–30 minutes
-particles per hypothesis: 50–100
-hypotheses: 100–300
-maximum backtrack duration: 12 hours
-fixed random seed: yes
+origin_region_overlap  0.35
+release_time_match     0.20
+drift_consistency      0.25
+trajectory_heading     0.10
+ais_data_quality       0.10
 ```
 
-Use an overlap-and-distance score rather than trusting a single reverse path:
+Forward drift begins from the vessel's actual interpolated position at a candidate release time. The scorer compares the result with the observed slick and returns a `0–100` lead score with reasons and warnings.
 
-```text
-forward consistency =
-    0.45 × polygon overlap
-  + 0.25 × centroid proximity
-  + 0.20 × shape/direction similarity
-  + 0.10 × ensemble coverage
-```
+### 6.5 API
 
-The implementation may begin with a local vector field. OpenDrift should be integrated only through an adapter so it can be replaced without changing the API.
-
-### 7.3 AIS engine
-
-Implement:
-
-1. Coordinate and timestamp validation.
-2. Vessel/time sorting.
-3. Impossible-speed filtering.
-4. Duplicate removal.
-5. Short-gap interpolation.
-6. Long-gap detection.
-7. Track buffering and source-region intersection.
-8. Release-window compatibility calculation.
-9. Track direction and heading features.
-10. AIS-quality scoring.
-
-Only interpolate short gaps. Long gaps should remain visible as warnings and reduce data quality.
-
-### 7.4 Evidence and ranking engine
-
-Normalize each evidence component to `[0, 1]`:
-
-```text
-origin_region_overlap: 0.35
-release_time_match:    0.20
-drift_consistency:     0.25
-trajectory_heading:    0.10
-ais_data_quality:      0.10
-```
-
-The engine must return both the numerical components and human-readable reasons. Example:
-
-```json
-{
-  "vessel_id": "vessel-a",
-  "lead_score": 0.84,
-  "components": {
-    "origin_region_overlap": 0.91,
-    "release_time_match": 0.87,
-    "drift_consistency": 0.82,
-    "trajectory_heading": 0.90,
-    "ais_data_quality": 0.76
-  },
-  "reasons": [
-    "Track intersects the high-probability source region",
-    "Present during the estimated release window",
-    "Forward drift reproduces the observed slick direction"
-  ],
-  "warnings": [
-    "AIS gap overlaps part of the release window"
-  ]
-}
-```
-
-## 8. API surface
-
-Implement the smallest useful API:
+Implemented routes:
 
 ```text
 GET  /api/health
 GET  /api/cases
 GET  /api/cases/{case_id}
+GET  /api/cases/{case_id}/sar/image
+GET  /api/cases/{case_id}/sar/bounds
 POST /api/cases/{case_id}/run
 GET  /api/cases/{case_id}/results/{run_id}
 ```
 
-`POST /run` should accept optional settings such as:
+Case IDs are path-safe, request seeds are bounded, missing resources return 404, invalid cases return 422, and results can be retrieved by arbitrary seed or `latest`.
 
-```json
-{
-  "mode": "full",
-  "seed": 26143,
-  "use_cached_result": false
-}
-```
+### 6.6 Frontend
 
-For the demo, the API may return a cached deterministic result after verifying that the case is valid.
+Implemented in `apps/web/`:
 
-## 9. Frontend implementation
+- Case selector with full and detection-only workflows.
+- Local SAR image overlay and reference/detected polygons.
+- Source probability regions and representative particle paths.
+- AIS routes linked to ranked candidates.
+- Functional release-window scrubber.
+- Weighted score breakdown, reasons, and warnings.
+- Detector metric panel for the DARTIS case.
+- Honest loading and failure states with no silent fake-data fallback.
+- Relative API URL with an optional `VITE_API_BASE_URL` override.
+- Responsive layouts and keyboard focus styling.
 
-Create one investigation workspace.
+## 7. Verification matrix
 
-### Main layout
+| Acceptance criterion | Automated check | Expected evidence |
+|---|---|---|
+| Detector uses pixels | `tests/test_detector.py` | Changed pixels change the detected candidate |
+| Real annotation comparison | `tests/test_detector.py` | DARTIS bbox IoU ≥ 0.90 |
+| Correct physical units | `tests/test_drift.py` | 1 m/s produces about 3.6 km in one hour |
+| Determinism | drift and golden tests | Same seed produces identical output |
+| Seed sensitivity | `tests/test_drift.py` | Different seed changes perturbations |
+| Correct ensemble size | `tests/test_golden_case.py` | 180 source hypotheses |
+| Expected release band | `tests/test_golden_case.py` | 03:00–09:00 UTC |
+| Ranking is evidence-based | `tests/test_ranking.py` | True source vessel beats nearer distractor by >20 points |
+| AIS limitation visible | ranking/golden tests | Long-gap warning on Vessel C |
+| API result retrieval | `tests/test_api.py` | Non-default seed returns successfully |
+| Detection-only isolation | `tests/test_api.py` | No source region or vessels returned |
+| Frontend compiles | `npm run build` | TypeScript and Vite production build succeed |
+| Live controlled flow | browser smoke check | 94.0 / 56.8 / 9.8 ranking displayed |
+| Live DARTIS flow | browser smoke check | 0.965 IoU and no attribution UI displayed |
 
-- Left panel: workflow steps and case metadata.
-- Center: map and layer controls.
-- Right panel: ranked candidates and evidence.
-- Bottom: observation/release timeline.
+## 8. Reference acceptance result
 
-### Map layers
-
-- SAR image.
-- Detected slick polygon.
-- Source probability heatmap.
-- Particle paths.
-- AIS trajectories.
-- Ports/platforms/coastline.
-- Optional future forecast.
-
-### Required interactions
-
-- Select a case.
-- Run analysis.
-- Toggle layers.
-- Scrub the timeline.
-- Select a vessel.
-- View score breakdown.
-- Reset/replay the case.
-
-The SAR raster must be usable as a local base layer so the core demo still works without map tiles or internet access.
-
-## 10. Ten-day schedule
-
-### Day 1: Dependency gate
-
-Complete:
+With seed `26143`, the controlled case must retain these stable demo properties:
 
 ```text
-one accessible SAR/oil annotation
-→ one spill polygon
-→ one wind/current input
-→ one drift simulation
-→ three vessel trajectories
-→ one candidate ranking
+analysis mode:           full
+ensemble hypotheses:     180
+release window:          03:00–09:00 UTC
+top vessel:              vessel_a / MV Ocean Star
+top score:               94.0
+nearest distractor:      vessel_b / MV Coastal Trader
+distractor score:        56.8
+long-gap vessel warning: present for vessel_c
 ```
 
-Exit criteria:
+The DARTIS case must retain:
 
-- Runs locally.
-- Writes JSON/GeoJSON output.
-- Produces a stable top candidate.
-- Does not require a live API.
+```text
+analysis mode:           detection_only
+input asset:             DARTIS_2019 ow-0010
+reference objects:       2
+best bbox IoU:           0.9647
+vessel ranking:          absent by design
+```
 
-If this fails, use local forcing and synthetic tracks immediately.
+## 9. Demo runbook
 
-### Days 2–3: Backend and drift
+### Before judging
 
-- Create Python environment.
-- Add FastAPI skeleton.
-- Define Pydantic schemas.
-- Implement case loader.
-- Implement particle movement.
-- Implement source-hypothesis search.
-- Export source heatmap and particle paths.
+1. Install locked Python and npm dependencies.
+2. Validate both case folders.
+3. Run the Python tests and frontend production build.
+4. Start FastAPI and Vite.
+5. Run both cases once in the UI.
+6. Keep `generated/` results available as a local backup.
+7. Avoid dependency upgrades after the rehearsal freeze.
 
-### Days 3–4: AIS and ranking
+### Five-to-seven-minute walkthrough
 
-- Implement AIS cleaning.
-- Add interpolation and gap flags.
-- Calculate region/time/trajectory features.
-- Implement weighted ranking.
-- Generate explanations and warnings.
-
-### Days 5–6: Frontend shell
-
-- Create React/Vite app.
-- Add case selection.
-- Add Leaflet map.
-- Add local raster and GeoJSON layers.
-- Add candidate list and evidence panel.
-
-### Days 6–7: Detection baseline
-
-- Implement image normalization.
-- Add dark-region detector.
-- Add look-alike filtering.
-- Evaluate against the validation case.
-- Store a precomputed fallback result.
-
-### Days 8–9: Integration and hardening
-
-- Connect the Run Analysis button.
-- Add loading and error states.
-- Add fixed-seed reproducibility.
-- Add golden-case tests.
-- Verify offline replay.
-- Capture screenshots and a backup demo recording.
-
-### Day 10: Freeze and rehearse
-
-- Freeze input data and dependencies.
-- Run the complete demo repeatedly.
-- Prepare architecture, data, limitation, and roadmap slides.
-- Assign presenter and backup presenter.
-
-## 11. Team ownership
-
-### Geospatial/backend owner
-
-- FastAPI.
-- Case schemas.
-- Drift simulation.
-- Source reconstruction.
-- GeoJSON output.
-
-### Data/ML owner
-
-- SAR preprocessing.
-- Dataset provenance.
-- Detection baseline.
-- Detection evaluation.
-
-### Frontend owner
-
-- Map workspace.
-- Timeline.
-- Layer controls.
-- Candidate evidence UI.
-
-### Integration/presentation owner
-
-- Golden case.
-- End-to-end testing.
-- Demo script.
-- Slides and judge questions.
-- Backup recording.
-
-## 12. Testing plan
-
-### Unit tests
-
-Test:
-
-- Coordinate validation.
-- Geodesic distance.
-- Polygon overlap.
-- Particle advection.
-- AIS interpolation.
-- AIS gap detection.
-- Score calculation.
-- Explanation generation.
-
-### Golden-case test
-
-With the same input and seed, verify:
-
-- The source region contains the expected source.
-- The expected release window is recovered within tolerance.
-- The expected vessel is ranked in the top three.
-- The true vessel outranks the nearest distractor.
-- The same run produces the same result.
-
-### Acceptance thresholds for the internal demo
-
-These are prototype quality gates, not scientific benchmarks:
-
-- End-to-end run completes in under 30 seconds using cached/local inputs.
-- Top candidate is stable across five repeated runs.
-- True source falls inside the displayed high/medium source region.
-- True simulated vessel ranks first or second.
-- At least one deliberately introduced AIS gap is displayed as a warning.
-- The UI remains usable without live API access.
-
-## 13. Risk register and responses
-
-| Risk | Response |
-|---|---|
-| Indian historical AIS is unavailable | Use simulated AIS for the controlled case and label it clearly |
-| Live Sentinel download fails | Preload the complete case and keep ingestion optional |
-| OpenDrift setup takes too long | Use the local particle simulator behind the same interface |
-| Backtracking is too broad | Show a region and confidence band; reduce the search window |
-| Dark SAR region is a look-alike | Show a look-alike validation case and environmental warnings |
-| Timestamp mismatch | Use explicit tolerance windows and report them |
-| AIS gap is misinterpreted | Show a data-quality warning, never a guilt claim |
-| Demo network fails | Use local raster and cached JSON/GeoJSON results |
-| Metrics overfit one scene | Split evaluation by scene or region where possible |
-| Dataset licence is unclear | Do not redistribute the asset until the licence is confirmed |
-
-## 14. Demo script
-
-### Opening
-
-“A dark patch in a satellite image is not enough to identify a polluter. OCEANTRACE connects the observed slick to environmental drift and vessel history, while showing uncertainty at every step.”
-
-### Walkthrough
-
-1. Select the controlled case.
-2. Show the SAR image and detected candidate.
+1. Open the Arabian Sea case and identify all inputs as controlled.
+2. Explain why the nearest vessel at observation time is not sufficient.
 3. Run the analysis.
-4. Show the estimated source region and release-time window.
-5. Toggle on the three vessel tracks.
-6. Show that the closest vessel is not the top lead.
-7. Open the top candidate's evidence breakdown.
-8. Point out an AIS-quality warning.
-9. Show the limitation banner.
-10. Close with the future authorised-data integration plan.
+4. Show the detected slick, source probability region, 180 hypotheses, and release window.
+5. Select each vessel and compare evidence components.
+6. Point out Vessel C's AIS-gap warning.
+7. Switch to the DARTIS case.
+8. Run detection and show the real labelled SAR patch and IoU.
+9. Close with the visible legal/scientific limitation.
 
-### Key message
+## 10. Judge-question boundaries
 
-> OCEANTRACE does not declare guilt. It turns uncertain satellite and maritime data into a reproducible, explainable investigation workflow.
+### Is the AIS real?
 
-## 15. Expected judge questions
+No. The Phase 1 end-to-end case uses clearly labelled simulated AIS so ranking behavior has known ground truth. The interface and schema are ready for authorised AIS integration.
 
-### “What is novel?”
+### Does the system prove responsibility?
 
-The underlying SAR, AIS, and drift techniques already exist. The prototype's contribution is their uncertainty-aware, explainable, reproducible integration for an India-focused investigation workflow.
+No. It produces investigative leads. Operational attribution requires incident review and independent evidence such as inspections, logs, samples, and chemical fingerprinting.
 
-### “Is the AIS data real?”
+### Is the detector an AI model?
 
-The Phase 1 controlled case uses labelled simulated AIS because unrestricted historical Indian AIS is not assumed to be publicly available. The architecture supports authorised AIS integration later.
+The Phase 1 detector is a transparent classical computer-vision baseline. This makes the complete workflow reproducible and debuggable. A learned segmentation model is a Phase 2 comparison, not a hidden Phase 1 dependency.
 
-### “Can this prove which ship caused the spill?”
+### Is 0.9647 IoU the overall model accuracy?
 
-No. It ranks investigative leads. Legal attribution requires additional evidence such as inspections, onboard records, or chemical fingerprinting.
+No. It is the best bounding-box overlap on one bundled DARTIS patch. Dataset-wide scene-level validation remains future work.
 
-### “What happens when the slick is not oil?”
+### What is the contribution?
 
-The detector treats dark regions as candidates, includes look-alike filtering, and exposes uncertainty rather than treating darkness as proof of oil.
+The underlying techniques are established. OceanTrace's prototype contribution is an uncertainty-aware, explainable integration that links a pixel-derived slick candidate to physical drift reconstruction and vessel-history evidence.
 
-### “Why not use a large AI model?”
+## 11. Remaining risks
 
-The first priority is a functioning, explainable end-to-end pipeline. A larger segmentation model can be evaluated after the data flow and ground-truth evaluation are stable.
+| Risk | Current control | Phase 2 action |
+|---|---|---|
+| SAR look-alikes | Candidate wording and real labelled validation | Add multi-scene oil/look-alike benchmark |
+| Simplified forcing | Units, uncertainty, and clear synthetic labels | Integrate archived gridded wind/current products |
+| AIS incompleteness | Gap warnings and quality score | Test authorised terrestrial/satellite AIS feeds |
+| Single controlled incident | Golden-case assertions | Add incidents and region-held-out evaluation |
+| Basemap network loss | Local SAR and analysis remain available | Package optional offline coastline tiles |
+| Uncalibrated lead scores | Evidence-score wording | Calibrate only after a representative incident set exists |
 
-## 16. Post-Phase 1 roadmap
+## 12. Phase 2 roadmap
 
-1. Add more public annotated SAR scenes.
-2. Train and cross-region-test a segmentation model.
-3. Integrate real archived wind and current products.
-4. Add forward validation from candidate vessel routes.
-5. Add authorised Indian AIS integration.
-6. Add platform, pipeline, port, and natural-seep source types.
-7. Add calibrated uncertainty and verified historical cases.
-8. Add live or semi-live Sentinel-1 ingestion.
+1. Add oil and look-alike scenes with scene-level train/validation/test splits.
+2. Compare the classical detector with a compact segmentation model.
+3. Add archived ERA5/Copernicus Marine or approved INCOIS forcing adapters.
+4. Integrate authorised AIS through a replaceable ingestion adapter.
+5. Add ports, platforms, pipelines, natural seeps, and non-vessel source priors.
+6. Model slick spreading and weathering over longer incidents.
+7. Add run persistence, user authentication, audit trails, and report export.
+8. Validate uncertainty calibration with reviewed historical incidents.
 
-## 17. Immediate next action
+## 13. Completion statement
 
-Create the first golden case and run the dependency gate before training any sophisticated model. The first successful output should be a local `AnalysisResult` containing:
-
-- One candidate slick polygon.
-- One source heatmap.
-- Three vessel tracks.
-- One ranked lead list.
-- Human-readable reasons and warnings.
+The scoped **SIH internal-college Phase 1 prototype is complete** when the commands in the README pass and both live case workflows match the verification matrix above. This statement does not imply production, scientific-certification, or legal-attribution readiness.

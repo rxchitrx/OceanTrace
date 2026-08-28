@@ -1,6 +1,8 @@
 {
-  "u": 0.01,
-  "v": 0.004,
-  "source": "archived_snapshot",
+  "u": 0.18,
+  "v": 0.07,
+  "units": "m/s",
+  "uncertainty": 0.04,
+  "source": "controlled_vector_field",
   "timestamp": "2026-01-14T12:00:00Z"
 }

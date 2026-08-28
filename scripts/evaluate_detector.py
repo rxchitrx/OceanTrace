@@ -1,11 +1,31 @@
+from __future__ import annotations
+
+import argparse
 import json
+import sys
 from pathlib import Path
 
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from services.api.case_runner import run_case
+
+
 if __name__ == "__main__":
-    result_path = Path("generated/arabian_sea_demo-analysis.json")
-    if result_path.exists():
-        payload = json.loads(result_path.read_text(encoding="utf-8"))
-        print(json.dumps(payload["detector"], indent=2))
-    else:
-        print("Run scripts/run_case.py first to generate a detector output.")
+    parser = argparse.ArgumentParser(description="Evaluate an OceanTrace detection case")
+    parser.add_argument("--case", default="dartis_validation")
+    parser.add_argument("--seed", type=int, default=26143)
+    arguments = parser.parse_args()
+    result = run_case(arguments.case, seed=arguments.seed)
+    print(
+        json.dumps(
+            {
+                "case_id": arguments.case,
+                "detector": result.detector.model_dump(mode="json"),
+                "evaluation": result.detector_evaluation,
+            },
+            indent=2,
+        )
+    )

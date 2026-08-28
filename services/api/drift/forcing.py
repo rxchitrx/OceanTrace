@@ -6,15 +6,41 @@ from typing import Any, Dict
 
 
 def load_forcing(path: Path) -> Dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    forcing = json.loads(path.read_text(encoding="utf-8"))
+    if forcing.get("units") != "m/s":
+        raise ValueError(f"Forcing file must use m/s units: {path}")
+    for component in ("u", "v"):
+        if component not in forcing:
+            raise ValueError(f"Forcing file is missing {component}: {path}")
+    forcing.setdefault("uncertainty", 0.0)
+    return forcing
 
 
-def blended_velocity(wind: Dict[str, Any], current: Dict[str, Any], windage: float) -> tuple[float, float]:
-    wind_u = float(wind["u"])
-    wind_v = float(wind["v"])
-    current_u = float(current["u"])
-    current_v = float(current["v"])
+def blended_velocity(
+    wind: Dict[str, Any],
+    current: Dict[str, Any],
+    windage: float,
+) -> tuple[float, float]:
     return (
-        current_u + (wind_u * windage),
-        current_v + (wind_v * windage),
+        float(current["u"]) + (float(wind["u"]) * windage),
+        float(current["v"]) + (float(wind["v"]) * windage),
+    )
+
+
+def perturbed_velocity(
+    wind: Dict[str, Any],
+    current: Dict[str, Any],
+    windage: float,
+    wind_u_noise: float,
+    wind_v_noise: float,
+    current_u_noise: float,
+    current_v_noise: float,
+) -> tuple[float, float]:
+    return (
+        float(current["u"])
+        + current_u_noise
+        + ((float(wind["u"]) + wind_u_noise) * windage),
+        float(current["v"])
+        + current_v_noise
+        + ((float(wind["v"]) + wind_v_noise) * windage),
     )

@@ -3,6 +3,7 @@
   "region": "Arabian Sea",
   "observation_time": "2026-01-14T12:00:00Z",
   "image_path": "sar.png",
+  "image_bounds_path": "sar_bounds.json",
   "spill_polygon": "spill_polygon.geojson",
   "forcing": {
     "wind_path": "wind.json",
@@ -11,13 +12,21 @@
   "ais_path": "ais.csv",
   "scenario_type": "controlled_demo",
   "ais_type": "simulated",
-  "forcing_type": "archived_snapshot",
+  "forcing_type": "controlled_vector_field",
   "coordinate_reference_system": "EPSG:4326",
   "random_seed": 26143,
+  "release_time_prior_hours": 6.0,
   "true_source_vessel_id": "vessel_a",
   "notes": [
-    "Controlled demonstration scenario",
-    "AIS tracks: simulated",
-    "Output: investigative lead, not legal attribution"
+    "Controlled demonstration scenario.",
+    "SAR image, forcing, and AIS tracks are synthetic.",
+    "Output is an investigative lead, not legal attribution."
+  ],
+  "data_sources": [
+    {
+      "name": "OceanTrace controlled Phase 1 case",
+      "type": "synthetic",
+      "license": "Project-generated demonstration data"
+    }
   ]
 }

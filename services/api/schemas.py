@@ -16,16 +16,20 @@ class CaseManifest(BaseModel):
     region: str
     observation_time: datetime
     image_path: str
+    image_bounds_path: str = "sar_bounds.json"
     spill_polygon: str
-    forcing: ForcingPaths
-    ais_path: str
+    annotation_path: Optional[str] = None
+    forcing: Optional[ForcingPaths] = None
+    ais_path: Optional[str] = None
     scenario_type: Literal["controlled_demo", "detection_validation"]
-    ais_type: str = "simulated"
-    forcing_type: str = "archived_snapshot"
+    ais_type: str = "not_applicable"
+    forcing_type: str = "not_applicable"
     coordinate_reference_system: str = "EPSG:4326"
     random_seed: int = 26143
+    release_time_prior_hours: float = 6.0
     true_source_vessel_id: Optional[str] = None
     notes: List[str] = Field(default_factory=list)
+    data_sources: List[Dict[str, str]] = Field(default_factory=list)
 
 
 class CandidateSlick(BaseModel):
@@ -81,11 +85,13 @@ class VesselEvidence(BaseModel):
 
 class AnalysisResult(BaseModel):
     run_id: str
+    analysis_mode: Literal["full", "detection_only"] = "full"
     detector: CandidateSlick
-    source_region: SourceRegion
-    release_window: ReleaseWindow
-    particles: List[ParticlePath]
-    vessels: List[VesselEvidence]
+    detector_evaluation: Optional[Dict[str, Any]] = None
+    source_region: Optional[SourceRegion] = None
+    release_window: Optional[ReleaseWindow] = None
+    particles: List[ParticlePath] = Field(default_factory=list)
+    vessels: List[VesselEvidence] = Field(default_factory=list)
     warnings: List[str]
     metadata: Dict[str, Any]
 
@@ -95,6 +101,7 @@ class CaseSummary(BaseModel):
     region: str
     scenario_type: str
     observation_time: datetime
+    analysis_mode: Literal["full", "detection_only"]
 
 
 class AisPoint(BaseModel):
@@ -112,13 +119,12 @@ class AisPoint(BaseModel):
 class CasePayload(BaseModel):
     manifest: CaseManifest
     spill_polygon: Dict[str, Any]
-    expected_result: Dict[str, Any]
+    expected_result: Dict[str, Any] = Field(default_factory=dict)
     available_layers: List[str]
-    ais_tracks: Dict[str, List[AisPoint]]
-
+    ais_tracks: Dict[str, List[AisPoint]] = Field(default_factory=dict)
 
 
 class RunRequest(BaseModel):
     mode: Literal["full", "cached"] = "full"
-    seed: int = 26143
+    seed: int = Field(default=26143, ge=0, le=2_147_483_647)
     use_cached_result: bool = False

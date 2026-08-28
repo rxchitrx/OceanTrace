@@ -1,17 +1,26 @@
 {
   "id": "dartis_validation",
-  "region": "Reference Validation Scene",
-  "observation_time": "2025-06-01T09:30:00Z",
-  "image_path": "image/sar.png",
+  "region": "Eastern Mediterranean Sea — DARTIS 2019",
+  "observation_time": "2019-01-19T03:42:58Z",
+  "image_path": "image/ow-0010.jpg",
+  "image_bounds_path": "sar_bounds.json",
   "spill_polygon": "annotations/detection_mask.geojson",
-  "forcing": {
-    "wind_path": "../arabian_sea_demo/wind.json",
-    "current_path": "../arabian_sea_demo/currents.json"
-  },
-  "ais_path": "../arabian_sea_demo/ais.csv",
+  "annotation_path": "annotations/ow-0010.xml",
   "scenario_type": "detection_validation",
+  "ais_type": "not_applicable",
+  "forcing_type": "not_applicable",
+  "coordinate_reference_system": "EPSG:4326",
   "notes": [
-    "Placeholder public validation case structure",
-    "Do not redistribute restricted datasets without checking the license"
+    "Real Sentinel-1-derived DARTIS oil/water patch.",
+    "Detection-only validation case; no vessel attribution is performed.",
+    "Dataset citation and licence are recorded in ATTRIBUTION.md."
+  ],
+  "data_sources": [
+    {
+      "name": "DARTIS_2019 ow-0010",
+      "type": "Sentinel-1-derived labelled SAR patch",
+      "url": "https://doi.org/10.1594/PANGAEA.980773",
+      "license": "CC BY 4.0"
+    }
   ]
 }

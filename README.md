@@ -1,327 +1,286 @@
-# OCEANTRACE
+# OceanTrace
 
-## Explainable oil-spill investigation from satellite imagery, ocean drift, and vessel trajectories
+**Explainable oil-spill investigation from SAR imagery, environmental drift, and vessel trajectories.**
 
-OCEANTRACE is a software prototype for investigating suspected oil spills at sea. It combines satellite imagery, environmental drift data, and AIS vessel trajectories to produce:
-
-1. A candidate slick detection.
-2. A probable source region and release-time window.
-3. A ranked list of vessels that are compatible with the evidence.
-4. An explanation of why each vessel was ranked where it was.
-
-OCEANTRACE is being developed for SIH26143, the Smart India Hackathon problem statement:
-
-> Leveraging satellite imagery to determine oil spills at sea along with AIS data correlations to identify the vessel responsible for the spill.
-
-The prototype is designed for maritime and environmental investigation support. It produces investigative leads; it does not establish legal responsibility.
-
-## Why this project matters
-
-Oil slicks are difficult to interpret from a single image. A dark region in Synthetic Aperture Radar (SAR) imagery may be oil, but it may also be a low-wind area, biogenic film, rain cell, current front, ship wake, wave shadow, or another look-alike.
-
-Even when a slick is genuine, the nearest vessel is not automatically the likely source. Wind, currents, release time, AIS coverage, and the vessel's previous trajectory must be considered together.
-
-OCEANTRACE follows this investigation workflow:
+OceanTrace is the completed Phase 1 prototype for Smart India Hackathon problem statement **SIH26143**. It converts a suspected marine slick into a reproducible investigation workflow:
 
 ```text
-SEE → VERIFY → TRACE → CORRELATE → RANK
+SAR scene → dark-region detection → source reconstruction → AIS correlation → ranked leads
 ```
 
-## Phase 1 prototype
+The system does **not** declare a vessel guilty. It ranks investigative leads and exposes the evidence, uncertainty, provenance, and data-quality limitations behind each score.
 
-The internal college-phase prototype is intentionally focused on one reliable end-to-end case:
+## Phase 1 status
+
+The internal-college demo path is implemented and verified.
+
+| Capability | Status | Evidence in the prototype |
+|---|---:|---|
+| Pixel-based SAR candidate detection | Complete | Adaptive dark-region detector reads image pixels and returns GeoJSON |
+| Real labelled validation asset | Complete | DARTIS `ow-0010`, original Pascal VOC annotation, CC BY 4.0 |
+| Probabilistic source reconstruction | Complete | 180 deterministic wind/current/windage hypotheses |
+| Independent forward validation | Complete | Source candidates are drifted forward and compared with the observed slick |
+| AIS cleaning and gap handling | Complete | Validation, sorting, deduplication, short-gap interpolation, long-gap warnings |
+| Explainable vessel ranking | Complete | Five visible evidence components and human-readable reasons |
+| Investigation dashboard | Complete | Two case modes, map layers, timeline, lead selection, errors, provenance |
+| Deterministic API and result retrieval | Complete | Fixed seed, generated JSON, arbitrary-seed and latest-result retrieval |
+| Automated verification | Complete | Detector, drift, AIS, ranking, API, and golden-case tests |
+
+Production deployment, authorised Indian AIS feeds, live Sentinel ingestion, and legal attribution are intentionally outside Phase 1.
+
+## Demo cases
+
+### 1. Arabian Sea controlled investigation
+
+This is the complete end-to-end walkthrough. Its SAR raster, wind/current vectors, and three AIS tracks are explicitly synthetic so the source is known and the ranking can be tested.
+
+The case is designed so that the vessel nearest the observed slick is not automatically the strongest lead. OceanTrace must reconstruct the earlier source area and compare vessel histories.
+
+A reference run with seed `26143` produces:
+
+| Output | Reference result |
+|---|---:|
+| Detector confidence | 79.4% |
+| Ensemble hypotheses | 180 |
+| Release window | 03:00–09:00 UTC |
+| MV Ocean Star | 94.0 |
+| MV Coastal Trader | 56.8 |
+| MV Horizon | 9.8 |
+
+These are controlled-case acceptance values, not real-world accuracy claims.
+
+### 2. DARTIS real-SAR validation
+
+This case runs detection only on the real Sentinel-1-derived DARTIS patch `ow-0010`. It deliberately has no AIS or forcing data and therefore performs no vessel ranking.
+
+The bundled asset includes:
+
+- The original 640 × 640 JPEG patch.
+- Its original Pascal VOC XML annotation.
+- A GeoJSON representation for map display.
+- Source, citation, and licence details in [`ATTRIBUTION.md`](data/cases/dartis_validation/ATTRIBUTION.md).
+
+The current detector obtains a best bounding-box IoU of `0.9647` against the two labelled oil objects. This is a one-patch engineering validation, not a dataset-wide benchmark.
+
+## How it works
+
+### 1. SAR detector
+
+`services/api/detection/baseline_detector.py`:
+
+1. Loads and median-filters the grayscale image.
+2. Performs robust percentile normalization.
+3. Estimates local background with Gaussian filters.
+4. Builds an adaptive dark-region mask.
+5. Applies morphological cleanup and connected-component analysis.
+6. Scores candidates using contrast, coherence, size, elongation, and darkness.
+7. Converts the strongest pixel bounding box into georeferenced GeoJSON.
+
+The detector never receives the annotation during inference. For labelled cases, evaluation happens afterward through Pascal VOC bounding-box IoU.
+
+### 2. Drift reconstruction
+
+`services/api/drift/` uses velocities in metres per second and converts displacement to latitude/longitude using Earth geometry. The controlled run evaluates combinations of:
+
+- Five release-time hypotheses.
+- Three windage settings.
+- Twelve uncertainty perturbations.
+
+The 180-member ensemble produces weighted source points, probability regions, a release window, representative particle paths, and run diagnostics. Strong candidates are independently simulated forward to the satellite observation time.
+
+### 3. AIS correlation
+
+`services/api/ais/` validates vessel positions, groups tracks, interpolates only short gaps, preserves long gaps as warnings, and derives:
+
+- Source-region distance and compatibility.
+- Presence within the release window.
+- Course and reconstructed-trajectory consistency.
+- AIS coverage quality.
+
+### 4. Evidence ranking
+
+`services/api/ranking/` combines five transparent components:
 
 ```text
-Preloaded SAR scene
-        ↓
-Candidate slick detection
-        ↓
-Wind/current particle simulation
-        ↓
-Probable source-region heatmap
-        ↓
-Three vessel trajectories
-        ↓
-Explainable evidence ranking
-        ↓
-Investigator dashboard
+Source-region compatibility  35%
+Release-window coverage      20%
+Forward-drift consistency    25%
+Trajectory/course match      10%
+AIS data quality             10%
 ```
 
-### Planned demonstration cases
+The final `0–100` value is a lead score, not a calibrated probability of responsibility.
 
-#### End-to-end controlled case
-
-A controlled Arabian Sea or Indian-coast scenario containing:
-
-- A preloaded SAR image or SAR-derived raster.
-- A candidate spill polygon.
-- An archived wind/current snapshot.
-- Three AIS vessel trajectories.
-- One simulated source vessel.
-- At least one nearby but incorrect vessel.
-- A release-time window with known ground truth for evaluation.
-
-The UI will explicitly identify simulated AIS data and will never present the result as proof of guilt.
-
-#### Detection validation case
-
-A public labelled SAR example, such as DARTIS or the CSIRO Sentinel-1 dataset, will be used to demonstrate oil/look-alike detection and report baseline metrics.
-
-## Core capabilities
-
-### 1. Candidate slick detection
-
-The first detector will be an explainable baseline:
-
-- SAR intensity normalization.
-- Noise reduction.
-- Sea and border masking.
-- Dark-region candidate extraction.
-- Connected-component filtering.
-- Geometry and texture feature extraction.
-- Candidate slick score.
-
-This baseline is deliberately useful for debugging and reproducibility. A CNN or U-Net segmentation model can be added after the complete workflow is stable.
-
-### 2. Probabilistic source reconstruction
-
-The drift engine will generate source hypotheses across a location and time grid. Each hypothesis will be forward-simulated to the observed satellite time using:
-
-- Ocean-current velocity.
-- Wind velocity and windage.
-- Diffusion or controlled perturbations.
-- Multiple release-time hypotheses.
-
-The resulting source map will show a high-, medium-, and low-probability region. The system will not claim that a single exact source point can always be recovered.
-
-### 3. AIS trajectory correlation
-
-AIS processing will:
-
-- Validate coordinates and timestamps.
-- Sort positions by vessel.
-- Remove impossible records.
-- Interpolate only short gaps.
-- Flag long gaps.
-- Measure source-region overlap.
-- Measure compatibility with the release window.
-- Compare vessel trajectory and drift direction.
-
-An AIS gap will be reported as a data-quality limitation, not as proof of deliberate concealment.
-
-### 4. Explainable vessel ranking
-
-The first ranking model will be a transparent weighted score:
+## Architecture
 
 ```text
-Source-region overlap       35%
-Release-time compatibility  20%
-Forward-drift consistency   25%
-Trajectory/heading match    10%
-AIS data quality            10%
+React + TypeScript + Leaflet
+          │ JSON / GeoJSON
+          ▼
+       FastAPI
+          │
+  ┌───────┼────────┐
+  ▼       ▼        ▼
+ SAR    Drift     AIS
+  └───────┼────────┘
+          ▼
+  Evidence ranking
+          ▼
+ generated/<case>-seed-<seed>.json
 ```
 
-The output is a lead score, not a calibrated attribution probability.
+All case-critical rasters and inputs are local. Internet map tiles add geographic context but are not required for the SAR overlay or analysis.
 
-Example explanation:
+## Repository structure
 
 ```text
-✓ Track intersects the high-probability source region
-✓ Vessel was present during the estimated release window
-✓ Forward simulation reproduces the observed slick direction
-✓ AIS coverage is adequate
-⚠ A 2-hour AIS gap overlaps part of the release window
+apps/web/                 Investigation dashboard
+services/api/             FastAPI routes, schemas, and orchestration
+services/api/detection/   Pixel detector and annotation evaluation
+services/api/drift/       Particle advection and source search
+services/api/ais/         AIS cleaning, interpolation, and features
+services/api/ranking/     Lead scoring and explanations
+data/cases/               Versioned controlled and validation cases
+scripts/                  Case validation, generation, and evaluation tools
+tests/                    Unit, API, and golden-case verification
+IMPLEMENTATION_PLAN.md    Phase 1 acceptance plan and completion record
 ```
-
-## Proposed architecture
-
-```text
-React + TypeScript dashboard
-              │
-              ▼
-          FastAPI API
-              │
-     ┌────────┼────────┐
-     ▼        ▼        ▼
-   SAR      Drift      AIS
- detector   engine   processor
-     └────────┼────────┘
-              ▼
-       Evidence engine
-              ▼
-     Results as JSON/GeoJSON
-```
-
-### Technology choices
-
-| Layer | Phase 1 choice |
-|---|---|
-| Frontend | React, TypeScript, Vite |
-| Mapping | Leaflet with GeoJSON overlays |
-| Backend | Python and FastAPI |
-| Geospatial processing | GeoPandas, Shapely, PyProj |
-| Numerical processing | NumPy, Pandas, SciPy |
-| Raster processing | Rasterio and OpenCV/scikit-image |
-| Storage | Local case files and SQLite if needed |
-| Drift model | Local particle simulator, with an OpenDrift adapter later |
-| Testing | Pytest plus deterministic golden-case tests |
-
-PostGIS, authentication, cloud deployment, and microservices are intentionally out of scope for the internal prototype.
-
-## Planned repository structure
-
-```text
-apps/web/                 React dashboard
-services/api/             FastAPI application
-services/api/detection/   SAR candidate detection
-services/api/drift/       Particle simulation and source search
-services/api/ais/         AIS cleaning and trajectory processing
-services/api/ranking/     Evidence scoring and explanations
-data/cases/               Reproducible demo cases
-scripts/                  Data preparation and evaluation commands
-tests/                    Unit and end-to-end golden-case tests
-IMPLEMENTATION_PLAN.md    Detailed build plan
-```
-
-## Data and provenance
-
-Potential data sources include:
-
-- DARTIS for accessible oil-slick and look-alike examples.
-- CSIRO Sentinel-1 imagery chips for practical baseline testing.
-- Copernicus Sentinel-1 catalogue and products for future ingestion.
-- ERA5 historical wind fields.
-- Copernicus Marine or INCOIS current products.
-- Global Fishing Watch for vessel-presence context where appropriate.
-- Authorised Indian AIS data as a future integration.
-
-Live satellite downloads and unrestricted historical Indian AIS are not Phase 1 dependencies. The demo will run from a complete, versioned local case so a network failure cannot break the presentation.
-
-Every case should record:
-
-- Data source and licence.
-- Acquisition or observation time.
-- Coordinate reference system.
-- Processing version.
-- Whether the data is real, simulated, or approximated.
-- Known limitations.
-
-## Running status
-
-The repository now contains a Phase 1 implementation scaffold:
-
-- `services/api/` contains the FastAPI entrypoint, case runner, detector baseline, drift search, AIS processing, and ranking logic.
-- `apps/web/` contains a Vite + React investigation workspace shell for the controlled demo.
-- `data/cases/arabian_sea_demo/` contains deterministic local inputs for the golden-case walkthrough.
-- `tests/` contains baseline detector, drift, AIS, ranking, and golden-case checks.
-
-The current implementation is deliberately lightweight and deterministic so the complete demo can run from local files before heavier model or dataset integration.
 
 ## Quick start
 
-### Backend
+### Requirements
+
+- Python 3.11 or newer
+- Node.js 20 or newer
+- npm
+
+### 1. Install the backend
+
+Using `uv`:
 
 ```bash
-pip install -r requirements.txt
-python scripts/run_case.py
-uvicorn services.api.main:app --reload
+uv venv
+uv pip install --python .venv/bin/python -r requirements.txt
 ```
 
-### Frontend
+Or using standard Python:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+### 2. Install the frontend
 
 ```bash
 cd apps/web
-npm install
+npm ci
+cd ../..
+```
+
+### 3. Start the demo
+
+Terminal 1:
+
+```bash
+.venv/bin/python -m uvicorn services.api.main:app --reload
+```
+
+Terminal 2:
+
+```bash
+cd apps/web
 npm run dev
 ```
 
-### Available API routes
+Open `http://127.0.0.1:5173`.
 
-```text
-GET  /api/health
-GET  /api/cases
-GET  /api/cases/{case_id}
-POST /api/cases/{case_id}/run
-GET  /api/cases/{case_id}/results/{run_id}
+## Verification commands
+
+Run all automated checks:
+
+```bash
+.venv/bin/python -m pytest -q
+cd apps/web && npm run build
 ```
 
-## Scientific and legal boundaries
+Validate the case bundles:
 
-OCEANTRACE must not claim that:
+```bash
+.venv/bin/python scripts/prepare_case.py arabian_sea_demo
+.venv/bin/python scripts/prepare_case.py dartis_validation
+```
 
-- Every dark SAR patch is oil.
-- A source point can always be reconstructed exactly.
-- An AIS gap proves intentional concealment.
-- The top-ranked vessel is legally responsible.
-- One dataset score represents global performance.
-- The SAR + AIS + drift combination is unprecedented.
+Run the controlled analysis from the command line:
 
-The correct wording is:
+```bash
+.venv/bin/python scripts/run_case.py
+```
 
-> OCEANTRACE ranks vessels as investigative leads using uncertainty-aware, explainable evidence fusion.
+Evaluate the real DARTIS patch:
 
-## Evaluation plan
+```bash
+.venv/bin/python scripts/evaluate_detector.py --case dartis_validation
+```
 
-### Slick detection
+Generated results are written to `generated/`, which is intentionally ignored by Git.
 
-- Precision.
-- Recall.
-- F1 score.
-- Intersection over Union.
-- Look-alike false-positive rate.
-- Scene-level performance.
+## API
 
-### Source reconstruction
+| Method | Route | Purpose |
+|---|---|---|
+| GET | `/api/health` | Service status and version |
+| GET | `/api/cases` | List available cases and analysis modes |
+| GET | `/api/cases/{case_id}` | Manifest, layers, polygon, and AIS tracks |
+| GET | `/api/cases/{case_id}/sar/image` | Local SAR image |
+| GET | `/api/cases/{case_id}/sar/bounds` | Geographic image bounds |
+| POST | `/api/cases/{case_id}/run` | Execute deterministic analysis |
+| GET | `/api/cases/{case_id}/results/{run_id}` | Retrieve a generated result; `latest` is supported |
 
-- True-source containment in the predicted region.
-- Distance from the true source to the predicted centroid.
-- Release-time error.
-- Ensemble coverage.
-- Sensitivity to wind/current perturbations.
+Example request:
 
-### Vessel ranking
+```json
+{
+  "mode": "full",
+  "seed": 26143,
+  "use_cached_result": false
+}
+```
 
-- Top-1 accuracy on controlled cases.
-- Top-3 recall.
-- Mean reciprocal rank.
-- True-vessel versus distractor score gap.
-- False-attribution rate.
+The DARTIS case returns `analysis_mode: "detection_only"` even when invoked through the same run endpoint.
 
-All validation splits should be by scene, incident, or region where possible, not random pixels from the same scene.
+## Demo sequence
 
-## Demo narrative
+1. Start with **Arabian Sea** and point out the synthetic-data labels.
+2. Run the full analysis.
+3. Show the reconstructed 03:00–09:00 release window and source region.
+4. Compare the three AIS trajectories and their lead scores.
+5. Open the top lead and explain each weighted component.
+6. Select **Eastern Mediterranean Sea — DARTIS 2019**.
+7. Run detector validation and show the real patch, annotation, and IoU.
+8. Close on the visible limitation: investigative support, not legal attribution.
 
-1. Select the controlled case.
-2. Show the SAR image and candidate slick overlay.
-3. Run source reconstruction.
-4. Show the source heatmap and release-time window.
-5. Display the three vessel tracks.
-6. Compare the nearest vessel with the evidence-ranked lead.
-7. Open the top candidate and show the score breakdown.
-8. Show uncertainty and AIS-quality warnings.
-9. Explain that the output is an investigative lead, not legal proof.
+## Scientific, legal, and data boundaries
 
-## Research references
+OceanTrace must not be presented as proving that:
 
-- [SIH26143 problem statement](https://raw.githubusercontent.com/vedantchalke36/sih-2026-problem-statements/main/ps_2026/SIH26143.md)
-- [Brekke and Solberg, satellite oil-spill detection](https://doi.org/10.1016/j.rse.2004.11.015)
-- [Topouzelis, SAR dark formation detection](https://doi.org/10.3390/s8106642)
-- [Krestenitis et al., deep neural-network detection](https://doi.org/10.3390/rs11151762)
-- [Dagestad et al., OpenDrift](https://gmd.copernicus.org/articles/11/1405/2018/)
-- [Longépé et al., SAR + AIS + forward drift](https://doi.org/10.1016/j.marpolbul.2015.08.006)
-- [Liu et al., vessel discharge tracing](https://doi.org/10.1016/j.ocecoaman.2021.105783)
-- [Luo et al., multi-source ship tracing](https://doi.org/10.1016/j.marpolbul.2024.116808)
-- [EMSA CleanSeaNet](https://www.emsa.europa.eu/csn-menu.html)
-- [INCOIS Online Oil Spill Advisory System](https://oosa.incois.gov.in/OOSA/)
+- Every dark SAR formation is oil.
+- One source point can always be recovered exactly.
+- An AIS gap implies deliberate concealment.
+- The highest-ranked vessel caused a spill.
+- Performance on one DARTIS patch generalizes to all seas or sensors.
 
-## License and contribution policy
+Real operational use would require broader scene-level validation, calibrated uncertainty, authorised AIS, archived environmental products, incident review, and independent corroborating evidence.
 
-The repository licence and contribution policy are to be finalized by the project owners. Before adding external datasets, models, code, or imagery, verify that their licences permit the intended use and redistribution.
+## Data provenance
 
-Contributors should:
+- The Arabian Sea case is project-generated controlled data.
+- DARTIS `ow-0010` is redistributed under CC BY 4.0 with its original annotation and attribution.
+- No live or restricted Indian AIS data is included.
 
-- Keep changes focused.
-- Preserve provenance for every data asset.
-- Add tests for scoring and geospatial calculations.
-- Avoid unsupported scientific or legal claims.
-- Document whether outputs are real, simulated, or approximated.
+Before adding any new imagery, model, vessel feed, or environmental product, record its source, licence, timestamp, CRS, processing history, and whether it is real, simulated, or approximated.
+
+## Licence
+
+The project-code licence is not yet selected by the repository owners. The DARTIS asset retains its own CC BY 4.0 terms and attribution. Do not assume that the absence of a top-level code licence grants redistribution rights.

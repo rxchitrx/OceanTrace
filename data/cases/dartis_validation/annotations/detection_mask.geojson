@@ -1,17 +1,18 @@
 {
   "type": "Feature",
   "properties": {
-    "label": "oil_like_slick"
+    "name": "DARTIS ow-0010 largest labelled oil object",
+    "annotation": "Pascal VOC object 1"
   },
   "geometry": {
     "type": "Polygon",
     "coordinates": [
       [
-        [68.1, 19.1],
-        [68.2, 19.1],
-        [68.2, 19.2],
-        [68.1, 19.2],
-        [68.1, 19.1]
+        [33.3774945451, 34.1499402539],
+        [33.2933709500, 34.1616632297],
+        [33.2764816935, 34.0790780841],
+        [33.3606052882, 34.0673551082],
+        [33.3774945451, 34.1499402539]
       ]
     ]
   }
