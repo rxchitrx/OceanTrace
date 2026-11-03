@@ -1,0 +1,6 @@
+outs:
+- md5: 4bbbf4e4aa4271b8e3879a5403d5615c.dir
+  size: 28339870
+  nfiles: 10
+  hash: md5
+  path: data_samples

@@ -1,0 +1,10 @@
+# Recreated Python environments and machine files
+.venv*/
+__pycache__/
+*.py[cod]
+.DS_Store
+.env
+.env.*
+!.env.example
+/Data
+/data_samples

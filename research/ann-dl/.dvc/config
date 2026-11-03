@@ -1,0 +1,4 @@
+[core]
+    remote = ssd
+['remote "ssd"']
+    url = /Volumes/APFS/OceanTrace-DVC/store

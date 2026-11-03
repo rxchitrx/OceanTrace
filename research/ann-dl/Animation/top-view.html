@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OceanTrace — top view</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;font:13px/1.5 var(--font-sans,system-ui,sans-serif);color:var(--ui-strong,#222)}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:1px solid #aaa;outline-offset:4px}main{background:var(--ui-page,#fbfbfa);color:var(--ui-strong,#222)}.plate{position:relative;border:1px solid var(--ui-border,#d4d4d4);background:var(--ui-card,#fbfbfa);overflow:hidden;padding:20px 22px 16px;color:var(--ui-mid,#777)}.top,.bottom{display:flex;justify-content:space-between;align-items:center;gap:15px;font:10px ui-monospace,monospace;letter-spacing:.5px}.top{color:var(--ui-mid,#777)}.top span:last-child{color:var(--ui-strong,#222)}.stage{display:block;width:100%;height:auto}.bottom{font-size:9px;color:var(--ui-mid,#777)}.bottom output{color:var(--ui-strong,#222);text-align:right}.caption{padding:18px 22px 10px;min-height:90px}.caption h1{font-size:18px;font-weight:400;letter-spacing:-.4px;margin:0 0 6px}.caption p{font-size:12px;color:var(--ui-mid,#777);margin:0;max-width:620px}.controls{display:flex;align-items:center;gap:12px;padding:6px 22px}.controls button{color:inherit;background:transparent;border:1px solid var(--ui-border,#ccc);border-radius:3px;padding:7px 10px;font:10px ui-monospace,monospace;min-width:50px}.controls input{flex:1;min-width:30px;accent-color:var(--ui-strong,#222);height:14px}.time{font:9px ui-monospace,monospace;color:var(--ui-mid,#777);white-space:nowrap}.note{font:9px/1.6 ui-monospace,monospace;color:var(--ui-mid,#777);margin:10px 0 0;padding:0 22px 16px}.part{fill:var(--tone-202020,#202020);stroke:var(--tone-8a8a8a,#8a8a8a);stroke-width:1;stroke-linejoin:round}.fine{fill:none;stroke:var(--tone-444,#444);stroke-width:.75}.hi{stroke:var(--tone-aaa,#aaa);fill:none;stroke-width:.85}.ink{fill:none;stroke:var(--tone-777,#777);stroke-width:.8}.lit{fill:var(--tone-d9d9d9,#d9d9d9);stroke:none}svg text{font-family:ui-monospace,monospace}
+@media(max-width:520px){.plate{padding:16px 14px 14px}.stage{width:124%;max-width:none;margin-left:-12%}.top{font-size:8px}.bottom{font-size:8px;letter-spacing:0;gap:8px}.bottom span{max-width:135px}.caption{min-height:104px}.caption h1{font-size:17px}.controls{gap:7px}.controls button{padding:7px 8px;min-width:44px}.time{font-size:8px}.note{font-size:8px}}
+</style></head><body>
+<main aria-label="OceanTrace minimal top-down animation">
+<div class="plate iso-plate" id="plate">
+ <div class="top"><span>FIG 02</span><span>OCEANTRACE / THE MISSING INTERVAL</span></div>
+ <svg class="stage" viewBox="0 0 900 430" role="img" aria-labelledby="title desc"><title id="title">A vessel disappears from its reported track</title><desc id="desc">Top-down illustration: the vessel sails, night falls, its on-board AIS switch turns off, oily waste is discharged, the vessel leaves, and AIS returns.</desc>
+ <defs><radialGradient id="pool"><stop stop-color="#808080" stop-opacity=".07"/><stop offset="1" stop-color="#808080" stop-opacity="0"/></radialGradient></defs>
+ <g id="dayIcon" transform="translate(780 43)" stroke="#777" stroke-width=".8" fill="none"><circle r="6"/><path d="M0-10v-4M0 10v4M-10 0h-4M10 0h4M7-7l3-3M-7 7l-3 3M7 7l3 3M-7-7l-3-3"/></g>
+ <g id="nightIcon" transform="translate(780 43)" stroke="#888" stroke-width=".8" fill="none" opacity="0"><path d="M5-8A9 9 0 1 0 8 5 8 8 0 0 1 5-8Z"/><circle cx="-14" cy="-10" r=".6" fill="#777" stroke="none"/></g>
+ <text id="dayText" x="750" y="74" font-size="9" fill="#777">MORNING</text>
+ <g id="camera">
+ <ellipse cx="450" cy="224" rx="310" ry="150" fill="url(#pool)"/>
+ <g id="water" stroke="#353535" stroke-width=".75" fill="none"></g>
+ <g id="trail" fill="none" stroke="#6f6f6f" stroke-width=".7"><path id="beforeTrack" d="M130 232H220"/><path id="afterTrack" d="M584 232H650" opacity="0"/></g>
+ <g id="oil" opacity="0">
+  <path d="M-67-8C-67-26-44-31-28-25-16-40 8-32 20-24 37-29 59-19 54-6 79 0 70 19 49 20 37 34 15 25 2 29-17 36-28 18-44 24-66 27-84 7-67-8Z" fill="#101010" stroke="#5b5b5b" stroke-width=".9"/>
+  <path d="M-51-8C-32-23-15-11 0-18S40-16 44-5M-53 9C-29-2-12 18 7 9S43 18 50 7M-23 21Q-5 13 22 20" fill="none" stroke="#3c3c3c" stroke-width=".65"/>
+ </g>
+ <g id="wake" fill="none" stroke="#555" stroke-width=".8"></g>
+ <g id="vessel">
+  <!-- True overhead view. Closed silhouettes, inset faces, one lit part. -->
+  <path d="M-89-31L52-31Q82-29 108 0 82 29 52 31H-89Q-95 0-89-31Z" fill="#121212" stroke="#aaa" stroke-width="1.1"/>
+  <path d="M-85-26H51Q76-25 99 0 76 25 51 26H-85Q-89 0-85-26Z" fill="#242424" stroke="#525252" stroke-width=".8"/>
+  <path d="M-80-22H48Q68-22 89 0 68 22 48 22H-80Z" fill="none" stroke="#3b3b3b" stroke-width=".6"/>
+  <g id="deckParts"></g>
+  <path d="M-75-24H-42V24H-75Z" fill="#181818" stroke="#8a8a8a" stroke-width=".9"/>
+  <rect x="-72" y="-20" width="27" height="40" rx="1" fill="#2c2c2c" stroke="#535353" stroke-width=".7"/>
+  <path d="M-42-20h4v40h-4" fill="#111" stroke="#777" stroke-width=".7"/>
+  <path d="M-40-15v5M-40-7v5M-40 1v5M-40 9v5" stroke="#aaa" stroke-width="1"/>
+  <rect x="-66" y="-7" width="13" height="14" rx="1" fill="#111" stroke="#666" stroke-width=".7"/>
+  <rect x="-63" y="-4" width="7" height="8" rx=".5" fill="#333" stroke="#555" stroke-width=".6"/>
+  <path d="M-58-20v-9M-63-26h10" class="hi"/>
+  <circle cx="-58" cy="-26" r="1.5" fill="#aaa"/>
+  <rect x="-72" y="27" width="20" height="7" rx="3" fill="#333" stroke="#777" stroke-width=".7"/>
+  <path d="M-68 27v7M-57 27v7" class="fine"/>
+  <!-- Small transmitter module: its switch visibly moves to OFF. -->
+  <rect x="-32" y="-12" width="19" height="24" rx="1" fill="#151515" stroke="#666" stroke-width=".7"/>
+  <rect x="-27" y="-7" width="8" height="14" rx="4" fill="#080808" stroke="#444" stroke-width=".7"/>
+  <rect id="switch" x="-26" y="-6" width="6" height="6" rx="2" class="lit"/>
+  <g id="pulses" fill="none" stroke="#ccc" stroke-width=".8"></g>
+  <path d="M80-7v14M76 0h8" class="ink"/>
+  <circle cx="72" cy="-13" r="2.1" class="part"/><circle cx="72" cy="13" r="2.1" class="part"/>
+  <path d="M67-13h10M67 13h10" class="fine"/>
+  <rect x="2" y="29" width="7" height="3" fill="#101010" stroke="#888" stroke-width=".6"/>
+  <g id="discharge" opacity="0"><path d="M5 32Q6 42-2 49" fill="none" stroke="#101010" stroke-width="6"/><path d="M5 32Q6 42-2 49" fill="none" stroke="#555" stroke-width=".6"/></g>
+ </g>
+ <g id="lastDot" opacity="0"><circle cx="447" cy="232" r="2.5" fill="#aaa"/><circle cx="447" cy="232" r="6" fill="none" stroke="#444" stroke-width=".7"/></g>
+ </g>
+ <g id="txReadout" transform="translate(110 369)"><circle id="statusDot" r="2" fill="#c8c8c8"/><text id="statusText" x="12" y="3" fill="#aaa" font-size="9" letter-spacing="1">AIS TRANSMITTING</text></g>
+ <g id="endNote" opacity="0"><path d="M608 362h18m-9-5v10" stroke="#777" stroke-width=".8"/><text x="638" y="365" fill="#777" font-size="9">A GAP IN THE RECORD</text></g>
+ </svg>
+ <div class="bottom"><span>TOP VIEW · ILLUSTRATIVE SEQUENCE</span><output id="readout">01 / 06 · UNDER WAY</output></div>
+</div>
+<div class="caption" aria-live="polite" aria-atomic="true"><h1 id="heading">A ship. A continuous signal.</h1><p id="caption">Position reports trace the vessel’s passage across the ocean.</p></div>
+<div class="controls"><button id="play" aria-label="Pause animation">Pause</button><button id="replay" aria-label="Replay animation">Replay</button><input id="seek" aria-label="Animation timeline in seconds" type="range" min="0" max="42" step=".05" value="0"><span class="time" id="time">00:00 / 00:42</span></div>
+<p class="note">Fictional sequence · time compressed · AIS gaps complicate attribution; they do not prove pollution.</p>
+</main>
+<script>
+(()=>{'use strict';const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';function add(tag,a,p){let e=document.createElementNS(NS,tag);for(let[k,v]of Object.entries(a))e.setAttribute(k,v);p.appendChild(e);return e}const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),ease=(a,b,t)=>{let x=clamp((t-a)/(b-a));return x*x*(3-2*x)},mix=(a,b,t)=>a+(b-a)*t;
+const waves=[];for(let i=0;i<28;i++){let x=80+(i*131)%750,y=108+(i*59)%230;if(y>196&&y<266)continue;waves.push({x,y,n:add('path',{d:`M${x} ${y}q5-3 10 0t10 0`},$('water'))})}
+for(let i=0;i<3;i++){let x=-3+i*21;add('rect',{x,y:-17,width:16,height:34,rx:1,class:'part'},$('deckParts'));add('rect',{x:x+3,y:-14,width:10,height:28,rx:.5,class:'fine'},$('deckParts'));add('path',{d:`M${x+8}-16v32`,class:'fine'},$('deckParts'));for(let y of[-21,21])add('circle',{cx:x+8,cy:y,r:1,fill:'#777'},$('deckParts'))}
+for(let y of[-28,28])for(let x of[-82,-36,28,50])add('circle',{cx:x,cy:y,r:.65,fill:'#8a8a8a'},$('deckParts'));
+const pulseNodes=[0,1,2].map(()=>add('circle',{cx:-23,cy:0,r:15},$('pulses'))),wakes=[0,1,2,3].map(()=>add('path',{d:''},$('wake')));
+const scenes=[
+ [0,'A ship. A continuous signal.','Position reports trace the vessel’s passage across the ocean.','UNDER WAY'],
+ [5,'Morning fades into night.','The ship keeps moving. Its AIS signal is still active.','NIGHTFALL'],
+ [10,'The ship switches off its signal.','The on-board AIS control moves to off. New position reports stop.','AIS DISABLED ON BOARD'],
+ [13,'An unreported discharge.','Oil and oily sludge enter the water during the missing interval.','OILY WASTE DISCHARGE'],
+ [18,'The ship leaves. The oil stays.','The vessel moves away, leaving the slick behind. Its reported position remains frozen.','NO NEW REPORTS'],
+ [23,'The signal returns — with a gap.','AIS restarts away from the slick. Linking the pollution to the vessel now requires more evidence.','AIS RESTORED']];
+let t=0,playing=!matchMedia('(prefers-reduced-motion: reduce)').matches,visible=true,last=null,raf=null,chapter=-1;
+const duration=42,cutoff=220+230*ease(0,13,10)-3,firstLength=cutoff-115,resumeStart=622.3760932944606;
+function state(t){return{t,off:t>=10&&t<23,night:ease(5,9,t),spill:ease(13,18,t),x:t<13?mix(220,450,ease(0,13,t)):t<23?mix(450,resumeStart,ease(18,23,t)):mix(resumeStart,resumeStart+firstLength+95,ease(23,38,t)),zoom:1+.4*ease(8,11,t)-.4*ease(19,25,t)-.32*ease(25,38,t),center:450+160*ease(25,38,t)}}
+const expand=h=>h.length===4?'#'+h.slice(1).split('').map(c=>c+c).join(''):h;
+function themeInk(hex,night){const dark=parseInt(expand(hex).slice(1,3),16),light=dark<65?255-dark:dark<100?220-dark:dark<160?205-dark:dark<200?210-dark:255-dark;let v=Math.round(mix(light,dark,night)).toString(16).padStart(2,'0');return '#'+v+v+v}
+const tones=new Set(['#202020','#8a8a8a','#444','#aaa','#777','#d9d9d9']);
+document.querySelectorAll('svg [fill],svg [stroke],svg [stop-color]').forEach(el=>{for(const attr of ['fill','stroke','stop-color']){const value=el.getAttribute(attr);if(value&&/^#[0-9a-f]{3,6}$/i.test(value)){tones.add(value);el.setAttribute(attr,`var(--tone-${value.slice(1)})`)}}});
+function applyTheme(n){const root=document.querySelector('main'),ink=ease(.62,.92,n);for(const h of tones)root.style.setProperty('--tone-'+h.slice(1),themeInk(h,ink));for(const [key,light,dark]of [['page',251,11],['card',251,19],['strong',34,200],['mid',100,140],['border',212,56]]){let v=Math.round(mix(light,dark,['strong','mid'].includes(key)?ink:n)).toString(16).padStart(2,'0');root.style.setProperty('--ui-'+key,'#'+v+v+v)}}
+
+function draw(){let s=state(t);applyTheme(s.night);$('dayIcon').setAttribute('opacity',1-s.night);$('nightIcon').setAttribute('opacity',s.night);$('dayText').textContent=s.night>.5?'NIGHT':'MORNING';$('vessel').setAttribute('transform',`translate(${s.x} 232)`);$('camera').setAttribute('transform',`translate(${450-s.center*s.zoom} ${232*(1-s.zoom)}) scale(${s.zoom})`);
+waves.forEach((w,i)=>w.n.setAttribute('transform',`translate(${-t*.5} ${Math.sin(t*.4+i)*.7})`));wakes.forEach((w,i)=>{let side=i%2?1:-1,d=6+Math.floor(i/2)*6;w.setAttribute('d',`M${s.x-91} ${232+side*d}Q${s.x-122} ${232+side*(d+5)} ${s.x-158-i*6} ${232+side*(d+10)}`);w.setAttribute('opacity',.6-.4*ease(10,13,t)+.4*ease(18,21,t))});
+let switchY=mix(-6,0,ease(9.7,10,t));if(t>=22.7)switchY=mix(0,-6,ease(22.7,23,t));$('switch').setAttribute('y',switchY);$('switch').style.fill=s.off?'#e05252':'#28a469';$('pulses').setAttribute('opacity',s.off?0:1);pulseNodes.forEach((p,i)=>{let q=(t*.65+i/3)%1;p.setAttribute('r',17+q*40);p.setAttribute('opacity',(1-q)*.6)});
+$('beforeTrack').setAttribute('d',`M115 232H${Math.min(cutoff,s.x-3)}`);$('lastDot').setAttribute('transform',`translate(${cutoff-447} 0)`);$('afterTrack').setAttribute('d',`M${resumeStart} 232H${Math.max(resumeStart,Math.min(resumeStart+firstLength,s.x-95))}`);$('afterTrack').setAttribute('opacity',t>=23?1:0);$('lastDot').setAttribute('opacity',ease(10,10.5,t)*(1-ease(24,26,t)));$('statusDot').setAttribute('fill',s.off?'#e05252':'#28a469');$('statusDot').setAttribute('stroke','none');$('statusText').textContent=s.off?'AIS SILENT':'AIS TRANSMITTING';$('oil').setAttribute('opacity',ease(13,14,t));$('oil').setAttribute('transform',`translate(447 282) scale(${.06+s.spill*1.13} ${.06+s.spill*.85})`);$('discharge').setAttribute('opacity',ease(13,13.4,t)*(1-ease(17.5,18,t)));$('endNote').setAttribute('opacity',ease(25,27,t));
+let c=0;scenes.forEach((a,i)=>{if(t>=a[0])c=i});if(c!==chapter){chapter=c;$('heading').textContent=scenes[c][1];$('caption').textContent=scenes[c][2];$('readout').textContent=`0${c+1} / 06 · ${scenes[c][3]}`}$('seek').value=t;$('seek').setAttribute('aria-valuetext',`${Math.floor(t)} seconds, ${scenes[c][1]}`);$('time').textContent=`00:${Math.floor(t).toString().padStart(2,'0')} / 00:42`}
+function setPlay(v){playing=v;last=null;$('play').textContent=v?'Pause':'Play';$('play').setAttribute('aria-label',v?'Pause animation':'Play animation');start()}
+function tick(now){raf=null;if(playing&&visible&&!document.hidden){if(last!==null)t=Math.min(duration,t+Math.min(.05,(now-last)/1000));last=now;draw();if(t===duration)setPlay(false)}else last=null;start()}
+function start(){if(!raf&&playing&&visible&&!document.hidden)raf=requestAnimationFrame(tick)}
+$('play').onclick=()=>{if(t===duration)t=0;setPlay(!playing);draw()};$('replay').onclick=()=>{t=0;draw();setPlay(true)};$('seek').oninput=e=>{setPlay(false);t=+e.target.value;draw()};document.addEventListener('keydown',e=>{if(e.code==='Space'&&!['INPUT','BUTTON','A'].includes(document.activeElement.tagName)){e.preventDefault();$('play').click()}});new IntersectionObserver(es=>{visible=es[es.length-1].isIntersecting;last=null;start()}).observe($('plate'));document.addEventListener('visibilitychange',()=>{last=null;start()});matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',e=>{if(e.matches)setPlay(false)});window.oceanTraceTop={seek(v){t=clamp(v,0,duration);setPlay(false);draw()},state(){return{...state(t),playing,chapter,firstLength,resumedLength:Math.max(0,Math.min(firstLength,state(t).x-95-resumeStart))}}};setPlay(playing);draw();
+})();
+</script></body></html>

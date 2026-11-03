@@ -284,3 +284,7 @@ Before adding any new imagery, model, vessel feed, or environmental product, rec
 ## Licence
 
 The project-code licence is not yet selected by the repository owners. The DARTIS asset retains its own CC BY 4.0 terms and attribution. Do not assume that the absence of a top-level code licence grants redistribution rights.
+
+## ANN/DL research and preprocessing
+
+The current college research, source catalogue, HTML presentation, preprocessing scripts and DVC dataset manifests are in [`research/ann-dl`](research/ann-dl/README.md). Large datasets are stored on the project SSD and restored with DVC; they are not committed as Git blobs.
