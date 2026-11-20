@@ -10,7 +10,7 @@ Date: 23 October 2026. Participants: Rachit and Codex. Source: direct user reque
 
 ## Artifact
 - [Open the standalone animation](../Animation/index.html) — 40 seconds, six scenes, pause, replay, timeline scrubbing, and chapter buttons. Works without installation or external dependencies.
-- [[College projects/OceanTrace/Animation/Design|Concept, parts and timing]].
+- [[College projects/OceanTrace/Research/Animation design|Concept, parts and timing]].
 - SVG ocean and detailed tanker; day/night transition, camera move, AIS pulses, on-board switch indicator, persistent oil slick, and authority track with a missing interval.
 
 ## Agent choices and evidence boundary

@@ -23,7 +23,7 @@ Anatomy Figure: standalone, self-contained SVG/HTML, no dependencies. A 40-secon
 AIS supplies ship identity and movement information. Missing AIS is not itself proof of pollution. This illustrative deliberate shutdown is part of the user's story. The final claim is that the gap makes attribution harder, not impossible. Source: https://navcen.uscg.gov/ais-frequently-asked-questions . OceanTrace's existing project overview defines investigation support with uncertainty, not legal proof.
 
 ## User-requested alternative — minimal top view
-23 October 2026: user requested a much simpler, true overhead view with Anatomy's monochrome machine-drawing look, while explicitly retaining the original. Implemented separately in `top-view.html`; `index.html` remains unchanged.
+23 October 2026: user requested a much simpler, true overhead view with Anatomy's monochrome machine-drawing look, while explicitly retaining the original. Implemented separately in `Animation/top-view.html`; `Animation/index.html` remains unchanged.
 
 The alternative uses flat charcoal surfaces, grey outlines, a single white transmitter switch, sparse water marks and restrained AIS rings. No perspective, coloured ocean, horizon, or dashboard. Thirty seconds: morning 0–5, nightfall 5–10, AIS off 10–13, discharge 13–18, departure 18–23, AIS restored 23–30. Pause, replay and scrub controls retained. User review of this direction is pending.
 
