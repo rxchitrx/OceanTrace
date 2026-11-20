@@ -1,16 +1,14 @@
 # OceanTrace research and preprocessing
 
-This directory preserves the research notes, presentation, acquisition scripts, preprocessing, and SOS provenance investigation. The existing application remains at the repository root. No neural model training is claimed here.
+This directory preserves the research notes, presentation, preprocessing evidence, and SOS provenance investigation. The existing application remains at the repository root. No neural model training is claimed here.
 
 ## Contents
 
-- `Project.md` and `Sessions/`: decisions, source evidence, findings and limitations.
+- `Project.md` and `Research/`: decisions, source evidence, findings and limitations.
 - `Presentation/index.html`: HTML presentation; accompanying local data must be restored for its data assets.
 - `Animation/`: project illustrations.
-- `Tools/sos-pilot/`: acquisition, dataset audit, model input preparation and AIS audit scripts.
-- `Tools/sos-mapping/indexed.py`: executed full-corpus matcher; `verify_results.py` checks its results. `run.py` is an earlier unvalidated draft.
-- `Data/`: original archives, full SAR scenes, 8,070 patches, prepared image/mask pairs, AIS data, mapping evidence and reports (DVC).
-- `data_samples/`: initial samples and third-party dataset reference material (DVC).
+- `Data/`: original archives, 8,070 patches, prepared image/mask pairs and AIS data (DVC).
+- `data_samples/`: one example patch image and a reference snapshot of the third-party DARTIS repo (DVC).
 
 ## Restore data from the SSD
 
@@ -35,14 +33,14 @@ The cache is a working copy used by DVC; `store` is the DVC remote. Both are on 
 
 ## Reproduce and update
 
-The executed preprocessing environment used Python 3.12.12. Recreate it separately using `Tools/sos-pilot/requirements.txt`; do not commit virtual environments. Consult the scripts and session notes before running large downloads or matching jobs. Credentials are supplied privately at runtime.
+The executed preprocessing used Python 3.12.12 with NumPy, Pillow, rasterio and pyogrio. No Python environment is kept in the repository; recreate one separately if needed. Consult the session notes before running large downloads or jobs. Credentials are supplied privately at runtime.
 
 After changing data, run `dvc add Data data_samples`, then `dvc push`. Commit the changed `.dvc` manifests along with the relevant code and notes.
 
 ## Status and limitations
 
 - All 8,070 image/mask pairs were audited and prepared. Supplied masks use an explicit baseline threshold of 128; original masks are preserved.
-- All 8,070 patches were searched against compatible full-resolution source scenes. There are 1,541 review candidates and 6,529 unresolved patches, with zero automatically accepted scene assignments. Candidate results are not a verified provenance crosswalk or a scene-disjoint split.
+- A 2026-11 search of all 8,070 patches against full-resolution source scenes produced 1,541 review candidates and 6,529 unresolved patches, with zero automatically accepted assignments. That mapping work was retired on 2026-11-06 and its outputs removed; no verified provenance crosswalk or scene-disjoint split exists.
 - A real NOAA AIS day was audited and regional tracks extracted. This 2020 data is not paired with the 2010/2017 SOS scenes.
 - PyTorch is the proposed training framework. The completed processing uses Python/NumPy/Pillow/OpenCV/rasterio; model training and final training splits remain future work.
 

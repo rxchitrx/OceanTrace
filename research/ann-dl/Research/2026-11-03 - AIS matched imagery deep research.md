@@ -6,7 +6,7 @@
 **Scope:** Individual-vessel timestamped AIS positions (MMSI, timestamp, lat/lon, SOG/COG) suitable for LSTM missing-track reconstruction, ideally time/location-matched to our SAR cases: SOS PALSAR Gulf of Mexico May–Aug 2010, SOS Sentinel Persian Gulf Aug 5–14 2017, Cantarell Jan–Sep 2020, DARTIS Eastern Mediterranean 2019, Zenodo Parts I–III.
 **Constraints honored:** No account creation, no purchases, no author/agency contact, no agreement acceptance, no bulk/annual archive downloads. Largest fetches this session: DARTIS PANGAEA data table (2.4 MB), IncidentNews `incidents.csv` (3.2 MB), RUS Copernicus tutorial PDF (1.9 MB), NOAA FAQ/data-dictionary PDFs, and HTTP range-reads of ≤512 KB against public NOAA/SJTU ZIPs to inspect headers/central directories. No secret exposure.
 
-Related: [[2026-11-03 - SOS provenance deep search]] · [[2026-11-03 - Original SOS share inspection]] · [[2026-11-03 - Additional datasets deep search]]
+Related: SOS provenance search (retired) · Original SOS share inspection (retired) · [[2026-11-03 - Additional datasets deep search]]
 
 ---
 
@@ -63,7 +63,7 @@ These times are precise AIS query windows (scene start ±1–3 h, filtered to th
 | S1A_IW_GRDH_1SDV_20170812T023120_..._017884_01DFD8_6CAE | 2017-08-12T02:31:20Z | 25.51–27.43, 49.97–52.81 | (n/a) |
 | S1A_IW_GRDH_1SDV_20170814T145006_..._017921_01E0ED_DB39 | 2017-08-14T14:50:06Z | 27.20–29.12, 46.89–49.79 | (n/a) — Kuwait slick remnants |
 
-PALSAR scenes are ~04:20–04:39 UTC passes (plus two ~16:25 UTC broad ScanSAR frames). Note: the scene inventory still does not map individual SOS chips to scenes (see [[2026-11-03 - SOS provenance deep search]]); the match here is at **dataset/scene level** (region + date), which is sufficient for AIS windowing of the DWH case.
+PALSAR scenes are ~04:20–04:39 UTC passes (plus two ~16:25 UTC broad ScanSAR frames). Note: the scene inventory still does not map individual SOS chips to scenes (see SOS provenance search, retired); the match here is at **dataset/scene level** (region + date), which is sufficient for AIS windowing of the DWH case.
 
 ### B. NOAA Marine Cadastre AIS — 2010 DWH window, access and schema verified
 
@@ -87,7 +87,7 @@ PALSAR scenes are ~04:20–04:39 UTC passes (plus two ~16:25 UTC broad ScanSAR f
 
 ### D. Kuwait, August 2017 — event and suspect vessel documented; no open AIS
 
-- The original SOS README references the 2010 Deepwater Horizon and August 2017 Kuwait incidents as source locations (per [[2026-11-03 - Original SOS share inspection]]).
+- The original SOS README references the 2010 Deepwater Horizon and August 2017 Kuwait incidents as source locations (per Original SOS share inspection, retired).
 - **RUS Copernicus training kit "OCEA03 Oil Spill Mapping, August 2017, Kuwait"** (Serco Italia, 2018; ESA EO4Society PDF, downloaded and text-verified) uses the exact product `S1A_IW_GRDH_1SDV_20170810T024714_20170810T024738_017855_01DEF7_F48C.zip` — the same scene as SOS/Dong Table 1 — for the spill "in the south of Kuwait, near the Al Khiran area." This confirms the SOS Sentinel subset's key scene is this documented incident.
 - **SkyTruth blog, 2017-08-15, "Satellite Imagery Reveals Scope of Last Week's Oil Spill in Kuwait" (John Amos)**: slick 131 km² on the Aug 10 Sentinel-1 image; ≥34,590 gallons at 1 µm assumption; oil ashore near Ras Al-Zour on Aug 11 (Sentinel-2); remnants drifting north on Aug 14 (Sentinel-1). **Pipelay vessel DLB 1600 (MarineTraffic shipid 457955, MMSI 370129000, IMO 9681651) visible on the Sentinel-1 image near the north end of the slick on Aug 10**, AIS showing slow eastward movement since Aug 5 (probably installing pipeline), within 9 km of the Al Khafji field by Aug 14. SkyTruth explicitly says the source/cause is **uncertain** (tanker, Al Khafji infrastructure, or pipelay/anchor damage hypotheses) — a suspect lead, not attribution.
 - PlanetScope study corroborates the event (oil spill near Ras Al-Zour, Kuwait, 2017-08-10, ANN detection on optical imagery with sunglint).
@@ -201,7 +201,7 @@ Inspected: NOAA 2010/2020 archive indexes, file headers/central directories and 
 - Mendeley synthetic Persian Gulf AIS-like data (rejected): https://data.mendeley.com/datasets/dbwfcf3bzm/1
 - NARI Brest AIS: https://doi.org/10.5281/zenodo.2563256
 - HuggingFace APIs for EnvShip-Voyage/EnvShip-Bench/andsanv-ais-tracks/eyesofworld-AIS_Dataset (license fields absent)
-- Prior vault context: [[2026-11-03 - Additional datasets deep search]] · [[2026-11-03 - SOS provenance deep search]] · [[2026-11-03 - Original SOS share inspection]] · `Wayfinding/Assets/Dataset Profile - OceanTrace.md` · `Wayfinding/OceanTrace - ANN-DL implementation spec.md`
+- Prior vault context: [[2026-11-03 - Additional datasets deep search]] · SOS provenance search (retired) · Original SOS share inspection (retired) · `Wayfinding/Assets/Dataset Profile - OceanTrace.md` · `Wayfinding/OceanTrace - ANN-DL implementation spec.md`
 
 ## Outcome
 

@@ -6,7 +6,7 @@
 **Scope:** Find usable oil-spill SAR masks/negatives/provenance, vessel AIS trajectory data, and evidence useful for co-located spill/AIS/metocean or drift validation. No bulk data were downloaded; no account or author contact was made.
 
 ## Follow-up verification — 2026-11-03
-The independent [[College projects/OceanTrace/Sessions/2026-11-03 - Cantarell acquisition group verification|Cantarell audit]] supersedes the unresolved grouping caveat below: all 173 sample IDs are unique; manifests contain 16/4/4 source groups across 108/43/22 tiles, matched to 24 distinct Sentinel-1 SAFE acquisitions with no cross-split overlap. The earlier train group list below was incomplete. Catalogue matching supports acquisition separation; archive pixel lineage is not independently proven. Binary masks combine oil spills and natural seeps as SLICK.
+The independent Cantarell audit (session note retired) supersedes the unresolved grouping caveat below: all 173 sample IDs are unique; manifests contain 16/4/4 source groups across 108/43/22 tiles, matched to 24 distinct Sentinel-1 SAFE acquisitions with no cross-split overlap. The earlier train group list below was incomplete. Catalogue matching supports acquisition separation; archive pixel lineage is not independently proven. Binary masks combine oil spills and natural seeps as SLICK.
 
 ## Executive finding
 
