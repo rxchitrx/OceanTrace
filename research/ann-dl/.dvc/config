@@ -2,3 +2,6 @@
     remote = ssd
 ['remote "ssd"']
     url = /Volumes/APFS/OceanTrace-DVC/store
+['remote "dagshub"']
+    url = s3://dvc
+    endpointurl = https://dagshub.com/rxchitrx/OceanTrace.s3

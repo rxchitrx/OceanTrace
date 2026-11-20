@@ -12,7 +12,7 @@ This directory preserves the research notes, presentation, preprocessing evidenc
 
 ## Restore data from the SSD
 
-Git contains code, notes and the small `.dvc` manifests. The actual datasets are stored in `/Volumes/APFS/OceanTrace-DVC/store` on the external SSD. This local remote is not a cloud backup and is unavailable without that SSD.
+Git contains code, notes and the small `.dvc` manifests. The default `ssd` remote stores the data in `/Volumes/APFS/OceanTrace-DVC/store` on the external SSD.
 
 Install DVC, connect the SSD, and run these commands from this directory:
 
@@ -31,11 +31,24 @@ dvc remote modify --local ssd url /your/mount/OceanTrace-DVC/store
 
 The cache is a working copy used by DVC; `store` is the DVC remote. Both are on the same SSD. Original research files were left in the vault. Virtual environments, Python caches, credentials, nested Git metadata, and unfinished download fragments are excluded.
 
+## Restore data from DagsHub
+
+The [private OceanTrace mirror](https://dagshub.com/rxchitrx/OceanTrace) stores DVC data for the research project. Run these commands from this directory with an authorized DagsHub token supplied as both `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` in your shell environment.
+
+```sh
+python3 -m pip install 'dvc[s3]==3.67.1'
+dvc pull -r dagshub
+```
+
+## Track training runs and models
+
+Set `MLFLOW_TRACKING_URI` to `https://dagshub.com/rxchitrx/OceanTrace.mlflow`. Supply your DagsHub username and token through `MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD`. Use the same server for run metrics, model artifacts, and registered models. [DagsHub MLflow setup](https://dagshub.com/docs/integration_guide/mlflow_tracking/)
+
 ## Reproduce and update
 
 The executed preprocessing used Python 3.12.12 with NumPy, Pillow, rasterio and pyogrio. No Python environment is kept in the repository; recreate one separately if needed. Consult the session notes before running large downloads or jobs. Credentials are supplied privately at runtime.
 
-After changing data, run `dvc add Data data_samples`, then `dvc push`. Commit the changed `.dvc` manifests along with the relevant code and notes.
+After changing data, run `dvc add Data data_samples`, then `dvc push -r ssd` and `dvc push -r dagshub`. Commit the changed `.dvc` manifests along with the relevant code and notes.
 
 ## Status and limitations
 
