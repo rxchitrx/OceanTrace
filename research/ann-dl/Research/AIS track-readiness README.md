@@ -45,9 +45,9 @@ The complete combined source was scanned; day totals and ±15-minute counts reco
 
 - Reproduce: the assessment script was retired after the run; inputs and outputs remain.
 - Source: `Data/AIS/scene-matched/scene-day-positions.csv`; source SHA256 in assessment.json.
-- [Full per-ID metrics and sensitivity](../Data/AIS/scene-matched/track-readiness/assessment.json)
-- [Scene summary](../Data/AIS/scene-matched/track-readiness/scene-summary.csv)
-- [Verification results](../Data/AIS/scene-matched/track-readiness/verification.json)
+- [Full per-ID metrics and sensitivity](../../../datasets/AIS/scene-matched/track-readiness/assessment.json)
+- [Scene summary](../../../datasets/AIS/scene-matched/track-readiness/scene-summary.csv)
+- [Verification results](../../../datasets/AIS/scene-matched/track-readiness/verification.json)
 
 ## Next step
 

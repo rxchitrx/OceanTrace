@@ -47,3 +47,4 @@ logs/
 # Generated files
 generated/
 *.pyc
+/datasets

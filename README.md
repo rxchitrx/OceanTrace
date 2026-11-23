@@ -10,6 +10,8 @@ SAR scene → dark-region detection → source reconstruction → AIS correlatio
 
 The system does **not** declare a vessel guilty. It ranks investigative leads and exposes the evidence, uncertainty, provenance, and data-quality limitations behind each score.
 
+The repository contains the runnable Phase 1 app and a separate ANN/DL research track. Start with [Quick start](#quick-start) to run the demo or [Research datasets](#research-datasets) to work with training data.
+
 ## Phase 1 status
 
 The internal-college demo path is implemented and verified.
@@ -140,7 +142,11 @@ services/api/detection/   Pixel detector and annotation evaluation
 services/api/drift/       Particle advection and source search
 services/api/ais/         AIS cleaning, interpolation, and features
 services/api/ranking/     Lead scoring and explanations
-data/cases/               Versioned controlled and validation cases
+data/cases/               Small demo inputs tracked in Git
+datasets.dvc              DVC manifest for the research dataset snapshot
+datasets/                 Research data restored by DVC
+research/ann-dl/           Research decisions, notes, presentation, and animations
+.dvc/config               Dataset remote configuration
 scripts/                  Case validation, generation, and evaluation tools
 tests/                    Unit, API, and golden-case verification
 IMPLEMENTATION_PLAN.md    Phase 1 acceptance plan and completion record
@@ -285,6 +291,36 @@ Before adding any new imagery, model, vessel feed, or environmental product, rec
 
 The project-code licence is not yet selected by the repository owners. The DARTIS asset retains its own CC BY 4.0 terms and attribution. Do not assume that the absence of a top-level code licence grants redistribution rights.
 
-## ANN/DL research and preprocessing
+## Research datasets
 
-The current college research, source catalogue, HTML presentation, preprocessing scripts and DVC dataset manifests are in [`research/ann-dl`](research/ann-dl/README.md). Large datasets are stored on the project SSD and restored with DVC; they are not committed as Git blobs.
+The demo reads `data/cases/` and runs from a fresh Git clone after installing dependencies. Use `datasets/` for ANN/DL work. Git tracks [the DVC manifest](datasets.dvc), while the data files are restored from DagsHub or the project SSD.
+
+| Location after restoration | What it contains |
+|---|---|
+| `datasets/SOS/archives/` | Image and mask ZIPs from the Refined SOS release, with the supplied split. |
+| `datasets/SOS/patches/train/` | 6,455 extracted SAR image patches for training. |
+| `datasets/SOS/patches/val/` | 1,615 held-out SAR image patches. |
+| `datasets/SOS/metadata/`, `pilot/`, and `previews/` | Source metadata and retained sample and preview material. |
+| `datasets/Preprocessing/sos-prepared/{train,val}/{images,masks}/` | Prepared image/mask pairs, organized by the supplied split. The parent preprocessing folder also contains audit reports and a pairing manifest. |
+| `datasets/AIS/archives/` and `datasets/AIS/scene-matched/` | Retained NOAA AIS inputs, extracted position files, and coverage evidence. General AIS audits and examples are under `datasets/AIS/`. |
+| `datasets/samples/` | An example SOS patch and a reference copy of the DARTIS tools. |
+
+SOS combines 3,877 ALOS PALSAR and 4,193 Sentinel-1A patches. To use the supplied masks, pair each patch with the same split and filename in `masks.zip`. The prepared masks use a threshold of 128 and remain available for reproducing the earlier baseline. The supplied split has no verified patch-to-source-scene crosswalk, so report its results as patch-split performance. The 2020 AIS example is separate from the 2010 and 2017 SOS acquisitions.
+
+### Restore from DagsHub
+
+From the repository root, install DVC with S3 support. Use an authorized DagsHub token provided through your shell environment as both `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
+
+```sh
+python3 -m pip install 'dvc[s3]==3.67.1'
+dvc pull -r dagshub datasets.dvc
+```
+
+On the [public DagsHub mirror](https://dagshub.com/rxchitrx/OceanTrace), use **Files** on `main` to check that `datasets/SOS/patches` is indexed. Then use **Datasets → Add New Source → Choose from existing data**, select that repository folder, and name the source `sos-refined-patches`. Save `train/` and `val/` as separate dataset views. The source has one row per image. Pairing the masks is a separate step in the training loader. [DagsHub datasource guide](https://dagshub.com/docs/use_cases/data_engine/connect_datasource/)
+
+### Research notes and experiment tracking
+
+- [Project overview](research/ann-dl/Project.md) records the ANN/DL direction and current limitations.
+- [Research notes](research/ann-dl/Research/) preserve acquisition details, preprocessing checks, and historical mapping experiments. Older notes use the paths from their original workspace.
+- [Presentation](research/ann-dl/Presentation/index.html) and [animations](research/ann-dl/Animation/) explain the problem and workflow.
+- [Research README](research/ann-dl/README.md) covers SSD restoration, refreshing the dataset snapshot, and MLflow. The repository contains the classical demo and research data preparation. U-Net and LSTM training are planned work.
