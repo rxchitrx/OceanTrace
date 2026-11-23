@@ -146,6 +146,7 @@ data/cases/               Small demo inputs tracked in Git
 datasets.dvc              DVC manifest for the research dataset snapshot
 datasets/                 Research data restored by DVC
 research/ann-dl/           Research decisions, notes, presentation, and animations
+research/ann-dl/training/   Reproducible original SOS PALSAR training baselines
 .dvc/config               Dataset remote configuration
 scripts/                  Case validation, generation, and evaluation tools
 tests/                    Unit, API, and golden-case verification
@@ -323,4 +324,5 @@ On the [public DagsHub mirror](https://dagshub.com/rxchitrx/OceanTrace), use **F
 - [Project overview](research/ann-dl/Project.md) records the ANN/DL direction and current limitations.
 - [Research notes](research/ann-dl/Research/) preserve acquisition details, preprocessing checks, and historical mapping experiments. Older notes use the paths from their original workspace.
 - [Presentation](research/ann-dl/Presentation/index.html) and [animations](research/ann-dl/Animation/) explain the problem and workflow.
-- [Research README](research/ann-dl/README.md) covers SSD restoration, refreshing the dataset snapshot, and MLflow. The repository contains the classical demo and research data preparation. U-Net and LSTM training are planned work.
+- [Research README](research/ann-dl/README.md) covers SSD restoration, refreshing the dataset snapshot, and MLflow. The proposed OceanTrace U-Net and AIS LSTM are planned work.
+- [Training baselines](research/ann-dl/training/) provides setup, dataset verification, and training commands for CBD-Net, DeepLabv3+, OFCN, and the Shaban-style CNN gate and U-Net comparison.

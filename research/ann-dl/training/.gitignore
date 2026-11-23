@@ -1,0 +1,10 @@
+/.venv*/
+/upstream/
+/original-palsar/
+/verified-sha256.txt
+/verified-sha256.tmp
+/download-failures.json
+/run/
+/run-*/
+/smoke/
+/smoke-*/
