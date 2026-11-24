@@ -7,7 +7,7 @@ Recreate the OceanTrace CBD-Net, DeepLabv3+, and OFCN baselines, or run the Shab
 Run these commands from the OceanTrace repository root. The original runs used Python 3.12.12 on Apple Silicon with Metal (MPS). Install Git and [uv](https://docs.astral.sh/uv/getting-started/installation/) first.
 
 ```sh
-cd research/ann-dl/training
+cd research/ann-dl/models
 uv venv --python 3.12.12 .venv
 uv pip sync --python .venv/bin/python requirements.lock
 uv venv --python 3.12.12 .venv-deeplab
@@ -15,7 +15,7 @@ uv pip sync --python .venv-deeplab/bin/python requirements-deeplab.lock
 
 git clone https://github.com/CUG-URS/Marine-Oil-Spill-Detection-Network-CBDNet.git upstream
 git -C upstream checkout --detach ba3aa2e854f8e7ff1fd72fbfd5ce37e864c6d7ad
-.venv/bin/python download.py
+.venv/bin/python download_sos_palsar.py
 ```
 
 The trainers reuse the pinned CBD-Net checkout for the model or shared helpers. The downloader retrieves the [authors' original files](https://drive.google.com/drive/folders/1KyrtyHkK3IC1_3mUvKA2B2H112uo3J1K) into `original-palsar/{train,test}/`. It checks each file against the committed SHA-256 listing and verifies its size and image format. Rerun it to resume a partial download. A successful run writes `verified-sha256.txt`. The [DagsHub dataset view](https://dagshub.com/rxchitrx/OceanTrace/datasets/dataset/4200/gallery?query=e30=) indexes the same release. See the [authors' usage terms](https://grzy.cug.edu.cn/zhuqiqi/zh_CN/yjgk/32368/list/index.htm) before using or sharing the data.
@@ -28,10 +28,10 @@ Run the command for the model you want. Smoke tests use three batches per stage 
 
 ```sh
 export PYTORCH_ENABLE_MPS_FALLBACK=1
-.venv/bin/python -u train.py --smoke-steps 3
-.venv-deeplab/bin/python -u train_deeplab.py --smoke-steps 3
-.venv/bin/python -u train_paper_baseline.py ofcn --smoke-steps 3
-.venv/bin/python -u train_paper_baseline.py shaban --smoke-steps 3
+.venv/bin/python -u train_cbdnet.py --smoke-steps 3
+.venv-deeplab/bin/python -u train_deeplabv3plus_mobilenetv2.py --smoke-steps 3
+.venv/bin/python -u train_ofcn.py --smoke-steps 3
+.venv/bin/python -u train_shaban_cnn_unet.py --smoke-steps 3
 ```
 
 ## Train and evaluate
@@ -39,10 +39,10 @@ export PYTORCH_ENABLE_MPS_FALLBACK=1
 Run the corresponding command in the same shell after its smoke test passes.
 
 ```sh
-.venv/bin/python -u train.py
-.venv-deeplab/bin/python -u train_deeplab.py
-.venv/bin/python -u train_paper_baseline.py ofcn
-.venv/bin/python -u train_paper_baseline.py shaban
+.venv/bin/python -u train_cbdnet.py
+.venv-deeplab/bin/python -u train_deeplabv3plus_mobilenetv2.py
+.venv/bin/python -u train_ofcn.py
+.venv/bin/python -u train_shaban_cnn_unet.py
 ```
 
 | Experiment | Configuration | Output |
@@ -60,7 +60,7 @@ Add `--mlflow` to a full training command to log settings and results. By defaul
 
 ## Files
 
-- `train.py`, `train_deeplab.py`, and `train_paper_baseline.py` are the training entry points.
-- `paper_models.py` defines OFCN, the Shaban-style CNN gate, and U-Net.
-- `download.py`, `drive-manifest.jsonl`, and `expected-sha256.txt` restore and verify the author split.
+- `train_cbdnet.py`, `train_deeplabv3plus_mobilenetv2.py`, `train_ofcn.py`, and `train_shaban_cnn_unet.py` are the single-model training entry points.
+- `ofcn_and_shaban_models.py` defines OFCN, the Shaban-style CNN gate, and U-Net; `baseline_runner.py` holds their shared training/eval helpers.
+- `download_sos_palsar.py`, `drive-manifest.jsonl`, and `expected-sha256.txt` restore and verify the author split.
 - The two lockfiles pin the dependencies from the original environments. Install each in its own virtual environment as shown above.

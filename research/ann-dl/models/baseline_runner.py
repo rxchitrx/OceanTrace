@@ -1,4 +1,4 @@
-"""Train OFCN or the Shaban CNN + U-Net comparison on original SOS PALSAR."""
+"""Shared training, evaluation, and MLflow helpers for train_ofcn.py and train_shaban_cnn_unet.py."""
 
 import argparse
 from contextlib import contextmanager
@@ -17,8 +17,24 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
-from paper_models import OFCN, ShabanGate, ShabanUNet, generalized_dice
-from train import DATA, ROOT, pairs, save
+from pathlib import Path
+from ofcn_and_shaban_models import OFCN, ShabanGate, ShabanUNet, generalized_dice
+
+ROOT = Path(__file__).resolve().parent
+DATA = ROOT / 'original-palsar'
+
+
+def pairs(split):
+    directory = DATA / split
+    images = {p.name.removesuffix('_sat.jpg') for p in directory.glob('*_sat.jpg')}
+    masks = {p.name.removesuffix('_mask.png') for p in directory.glob('*_mask.png')}
+    return sorted(images & masks, key=int)
+
+
+def save(state, path):
+    temp = path.with_suffix('.tmp')
+    torch.save(state, temp)
+    temp.replace(path)
 
 SEED = 26143
 DATASET = 'sos-original-palsar-v1'
@@ -356,14 +372,14 @@ def run(args, work, ids, test_ids, fingerprint):
         print(json.dumps(results, indent=2), flush=True)
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('baseline', choices=EXPERIMENTS)
+def run_cli(baseline: str, description: str | None = None):
+    parser = argparse.ArgumentParser(description=description or __doc__)
     parser.add_argument('--device', choices=('mps', 'cuda', 'cpu'), default='mps')
     parser.add_argument('--smoke-steps', type=int, default=0, help='Batches per stage in a one-epoch smoke test')
     parser.add_argument('--epochs', type=int, help='Override the full-run epoch cap for each stage')
     parser.add_argument('--mlflow', action='store_true', help='Log to the OceanTrace DagsHub project')
     args = parser.parse_args()
+    args.baseline = baseline
     if args.smoke_steps < 0 or (args.epochs is not None and args.epochs < 1):
         parser.error('Invalid epoch or smoke step count')
     if args.smoke_steps and (args.mlflow or args.epochs):
@@ -386,4 +402,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit('Run train_ofcn.py or train_shaban_cnn_unet.py directly.')
