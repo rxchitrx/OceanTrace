@@ -326,4 +326,4 @@ On the [public DagsHub mirror](https://dagshub.com/rxchitrx/OceanTrace), use **F
 - [Models](models/README.md) provides setup, dataset verification, and single-model training scripts for CBDNet, DeepLabv3+, OFCN, and the Shaban CNN gate + U-Net comparison.
 - [Scene matching](scene_matching/README.md) holds the SAR scene-matching & georeferencing pipeline, 3,605-patch WGS84 matches, leak-free `scene_disjoint_split.csv`, visual spot-checks, and [EXPERIMENT_LOG.md](scene_matching/EXPERIMENT_LOG.md).
 - [Presentation](presentation/index.html) and [animations](presentation/animations/) explain the problem and workflow.
-- [Project overview](docs/Project.md) and [docs](docs/) preserve acquisition details, preprocessing checks, AIS audits, and historical mapping notes.
+- [Docs](docs/) preserve SAR preprocessing checks, scene-matched NOAA AIS coverage/track readiness, and external dataset surveys.
