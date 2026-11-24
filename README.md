@@ -145,8 +145,10 @@ services/api/ranking/     Lead scoring and explanations
 data/cases/               Small demo inputs tracked in Git
 datasets.dvc              DVC manifest for the research dataset snapshot
 datasets/                 Research data restored by DVC
-research/ann-dl/           Research decisions, notes, presentation, and animations
-research/ann-dl/training/   Reproducible original SOS PALSAR training baselines
+models/                   Single-model SAR oil-spill training scripts (CBDNet, DeepLabv3+, OFCN, Shaban CNN+U-Net)
+scene_matching/           SAR scene-matching pipeline, 3,605-patch WGS84 tables, leak-free split, visuals, and log
+presentation/             HTML slide decks, PowerPoint deck, and SAR/AIS animations
+docs/                     Project overview, research notes, and AIS/dataset audits
 .dvc/config               Dataset remote configuration
 scripts/                  Case validation, generation, and evaluation tools
 tests/                    Unit, API, and golden-case verification
@@ -319,10 +321,9 @@ dvc pull -r dagshub datasets.dvc
 
 On the [public DagsHub mirror](https://dagshub.com/rxchitrx/OceanTrace), use **Files** on `main` to check that `datasets/SOS/patches` is indexed. Then use **Datasets → Add New Source → Choose from existing data**, select that repository folder, and name the source `sos-refined-patches`. Save `train/` and `val/` as separate dataset views. The source has one row per image. Pairing the masks is a separate step in the training loader. [DagsHub datasource guide](https://dagshub.com/docs/use_cases/data_engine/connect_datasource/)
 
-### Research notes and experiment tracking
+### Models, scene matching, presentation, and docs
 
-- [Project overview](research/ann-dl/Project.md) records the ANN/DL direction and current limitations.
-- [Research notes](research/ann-dl/Research/) preserve acquisition details, preprocessing checks, and historical mapping experiments. Older notes use the paths from their original workspace.
-- [Presentation](research/ann-dl/Presentation/index.html) and [animations](research/ann-dl/Animation/) explain the problem and workflow.
-- [Research README](research/ann-dl/README.md) covers SSD restoration, refreshing the dataset snapshot, and MLflow. The proposed OceanTrace U-Net and AIS LSTM are planned work.
-- [Training baselines](research/ann-dl/training/) provides setup, dataset verification, and training commands for CBD-Net, DeepLabv3+, OFCN, and the Shaban-style CNN gate and U-Net comparison.
+- [Models](models/README.md) provides setup, dataset verification, and single-model training scripts for CBDNet, DeepLabv3+, OFCN, and the Shaban CNN gate + U-Net comparison.
+- [Scene matching](scene_matching/README.md) holds the SAR scene-matching & georeferencing pipeline, 3,605-patch WGS84 matches, leak-free `scene_disjoint_split.csv`, visual spot-checks, and [EXPERIMENT_LOG.md](scene_matching/EXPERIMENT_LOG.md).
+- [Presentation](presentation/index.html) and [animations](presentation/animations/) explain the problem and workflow.
+- [Project overview](docs/Project.md) and [docs](docs/) preserve acquisition details, preprocessing checks, AIS audits, and historical mapping notes.

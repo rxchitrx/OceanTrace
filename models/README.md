@@ -7,7 +7,7 @@ Recreate the OceanTrace CBD-Net, DeepLabv3+, and OFCN baselines, or run the Shab
 Run these commands from the OceanTrace repository root. The original runs used Python 3.12.12 on Apple Silicon with Metal (MPS). Install Git and [uv](https://docs.astral.sh/uv/getting-started/installation/) first.
 
 ```sh
-cd research/ann-dl/models
+cd models
 uv venv --python 3.12.12 .venv
 uv pip sync --python .venv/bin/python requirements.lock
 uv venv --python 3.12.12 .venv-deeplab
