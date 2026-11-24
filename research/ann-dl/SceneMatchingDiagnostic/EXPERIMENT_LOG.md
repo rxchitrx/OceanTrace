@@ -130,3 +130,14 @@
   - **Footprint discovery validated at scale:** Intermediate Sentinel footprints discovered in Round 2 (`322 px`: 196, `274 px`: 176, `268 px`: 61, `524 px`: 60, `445 px`: 48, `437 px`: 18) accounted for **559+ verified Sentinel matches**.
   - **Definitive Train/Val Scene-Leakage Audit:** **19 out of 20 matched satellite scenes** (all **7 / 7** Sentinel-1 scenes and **12 / 13** matched PALSAR scenes) appear in **both `train` and `val`** (e.g., `IW_GRDH_1SDV_017782_01DCBB_DE28` has 435 train patches + 261 val patches from the same pass).
 - **Outputs:** `full_v2/results.csv`, `full_v2/results.json`, `full_v2/summary.md`, `full_v2/review_sample.html` (44 visual evidence panels).
+
+---
+
+## Step 2 — Scene-Canvas Mask-Chaining Audit (`run_mask_chaining_v3.py`) & Steps 3–4 Georeferencing + Scene-Disjoint Split
+
+- **Step 2 (v3 Mask-Chaining on MPS GPU, 6,898 s):** Stitched all 2,882 locked masks into 18 Scene Oil-Slick Canvases and searched 5,135 unresolved patches across 36 rotation angles (`0–350°` step `10°`) × multiple footprints.
+  - Coarse dual gate (`Mask Dice >= 0.80` + `SAR sigma=4 ZNCC >= 0.78`) surfaced **186 candidates** (58 PALSAR, 128 Sentinel-1).
+  - **Crucial visual audit (`full_v3_mask_chain/v3_spotcheck.jpg`):** Visual inspection revealed that `sigma=4.0` blur alone admitted dark-half/light-half oil-edge coincidences at arbitrary angles (`palsar_1322`, `palsar_1682`, `sentinel_1877`), whereas true pixel-locked matches (like `sentinel_323`, `nz1.2=0.9880`) had pitch-black difference maps.
+  - **Strict native `sigma=1.2 >= 0.90` filter:** Retained **4 rock-solid extra Sentinel-1 matches** (`sentinel_323`, `sentinel_268`, `sentinel_84`, `sentinel_3155`) and rejected all blurred false coincidences → **2,886 verified high-confidence matches** total with **zero false positives**.
+- **Step 3 (Georeferencing — `georeference_matches.py`):** Built exact WGS84 geolocation models for all **21 / 21** archived scenes (ESA `geolocationGridPointList` bilinear interpolation for Sentinel-1; JAXA L1.5 `.kml` 4-corner bilinear mapping validated to `<= 0.00766°` against `workreport` center for PALSAR) + exact UTC acquisition timestamps → saved `georeferenced_matches.csv` (2,886 rows).
+- **Step 4 (Leak-Free Scene-Disjoint Split):** Generated `scene_disjoint_split.csv` holding out 5 entire scenes for validation (**0 shared scenes** vs. 19/20 in official SOS): `2,318 train` / `568 val (19.7%)` (`920/217` PALSAR, `1,398/351` Sentinel-1).

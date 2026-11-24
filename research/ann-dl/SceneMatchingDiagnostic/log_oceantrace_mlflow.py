@@ -213,13 +213,86 @@ def run_backfill(diag_root: str, dry_run: bool):
     )
 
 
+def log_v3_v4_runs(diag_root: str, dry_run: bool):
+    # 5. Full 8,070-Patch v3 Scene-Canvas Mask-Chaining (MPS)
+    v3_dir = os.path.join(diag_root, "full_v3_mask_chain")
+    log_one_run(
+        run_name="05_full8070_v3_mask_chain_mps",
+        params={
+            "method": "scene_canvas_mask_chaining_v3",
+            "dataset_scope": "unresolved_5135",
+            "angle_step_deg": "10",
+            "gate": "mask_dice>=0.80_and_sar_nz4>=0.78_then_strict_nz1.2>=0.90",
+            "device": "mps",
+        },
+        metrics={
+            "unresolved_input": 5135.0,
+            "coarse_dual_gated_candidates": 186.0,
+            "strict_verified_new_matches": 4.0,
+            "cumulative_verified_total": 2886.0,
+            "cumulative_match_rate_pct": 35.76,
+            "runtime_sec": 6898.0,
+        },
+        artifacts=[
+            os.path.join(v3_dir, "mask_chain_verified_strict.json"),
+            os.path.join(v3_dir, "v3_spotcheck.jpg"),
+            os.path.join(diag_root, "run_mask_chaining_v3.py"),
+        ],
+        tags={"stage": "v3_mask_chain", "sensor_scope": "palsar+sentinel"},
+        dry_run=dry_run,
+    )
+
+    # 6. Full 8,070-Patch v4 Cross-Sensor (Mislabeled Sentinel->PALSAR) & Denoised PALSAR (MPS)
+    v4_dir = os.path.join(diag_root, "full_v4")
+    v4_new_path = os.path.join(v4_dir, "v4_new_matches.json")
+    v4_new = json.load(open(v4_new_path)) if os.path.exists(v4_new_path) else []
+    v4_metrics = {
+        "cross_sensor_input": 1951.0,
+        "denoised_palsar_input": 2735.0,
+        "new_verified_matches": float(len(v4_new)),
+        "cross_sensor_mislabeled_found": float(sum(1 for r in v4_new if r.get("cross_sensor_mislabeled"))),
+        "denoised_palsar_new_matches": float(sum(1 for r in v4_new if r.get("group") == "denoised_palsar")),
+        "cumulative_verified_total": float(2886 + len(v4_new)),
+        "cumulative_match_rate_pct": round(100.0 * (2886 + len(v4_new)) / 8070.0, 2),
+        "pos_controls_passed": 3.0,
+        "neg_controls_false_accepts": 0.0,
+        "runtime_sec": 567.3,
+    }
+    if v4_new:
+        v4_metrics["median_native_zncc"] = round(statistics.median(r["native_zncc"] for r in v4_new), 4)
+    log_one_run(
+        run_name="06_full8070_v4_cross_sensor_mps",
+        params={
+            "method": "cross_sensor_palsar_plus_denoised_v4",
+            "dataset_scope": "sentinel_1381_3353_plus_unresolved_palsar",
+            "palsar_footprints": "256,416",
+            "orientations": "rot4",
+            "device": "mps",
+            "mode": "conv2d",
+        },
+        metrics=v4_metrics,
+        artifacts=[
+            os.path.join(v4_dir, "v4_summary.md"),
+            os.path.join(v4_dir, "v4_new_matches.csv"),
+            os.path.join(v4_dir, "v4_spotcheck.jpg"),
+            os.path.join(diag_root, "georeferenced_matches.csv"),
+            os.path.join(diag_root, "scene_disjoint_split.csv"),
+            os.path.join(diag_root, "georef_summary.md"),
+            os.path.join(diag_root, "run_v4_cross_sensor_and_denoised.py"),
+        ],
+        tags={"stage": "v4_cross_sensor", "sensor_scope": "sentinel_to_palsar"},
+        dry_run=dry_run,
+    )
+
+
 def main():
     ap = argparse.ArgumentParser(description="Log OceanTrace SAR scene-matching runs to DagsHub + MLflow")
     ap.add_argument("--repo-owner", default=os.environ.get("DAGSHUB_USER", "rxchitrx"), help="DagsHub username")
     ap.add_argument("--repo-name", default=os.environ.get("DAGSHUB_REPO", "OceanTrace"), help="DagsHub repo name")
     ap.add_argument("--experiment", default=EXPERIMENT_NAME, help="MLflow experiment name")
     ap.add_argument("--diag-root", default=DIAG_ROOT, help="Path to SceneMatchingDiagnostic/")
-    ap.add_argument("--backfill", action="store_true", help="Backfill all 4 historical runs")
+    ap.add_argument("--backfill", action="store_true", help="Backfill all 6 historical runs (01..06)")
+    ap.add_argument("--log-v3-v4", action="store_true", help="Log only the new v3 and v4 runs (05 and 06)")
     ap.add_argument("--log-dir", default=None, help="Log a single new run directory containing results.json")
     ap.add_argument("--run-name", default="scene_matching_run", help="MLflow run name when using --log-dir")
     ap.add_argument("--method", default="custom", help="Method tag when using --log-dir")
@@ -227,8 +300,8 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="Print metrics/artifacts without logging")
     args = ap.parse_args()
 
-    if not args.backfill and not args.log_dir:
-        ap.error("Pass --backfill to log past runs, or --log-dir <folder> to log a new run.")
+    if not args.backfill and not args.log_v3_v4 and not args.log_dir:
+        ap.error("Pass --backfill, --log-v3-v4, or --log-dir <folder>.")
 
     if not args.dry_run:
         if args.local_only:
@@ -248,6 +321,9 @@ def main():
 
     if args.backfill:
         run_backfill(args.diag_root, args.dry_run)
+        log_v3_v4_runs(args.diag_root, args.dry_run)
+    elif args.log_v3_v4:
+        log_v3_v4_runs(args.diag_root, args.dry_run)
 
     if args.log_dir:
         r_json = os.path.join(args.log_dir, "results.json")
