@@ -1,0 +1,233 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>OceanTrace · 50-Tile Diagnostic Visual Review (v2 — 27/50 Matched)</title>
+<style>
+body{margin:0;padding:24px;background:#f3f1eb;color:#162426;font:14px/1.45 system-ui,sans-serif}
+h1{font-family:Georgia,serif;margin:0 0 6px} .sub{color:#516163;margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:16px}
+.card{background:#fbfaf6;border:1px solid #cfd4ce;border-radius:8px;padding:12px}
+.card.v2{border:2px solid #0f766e;background:#f2faf8}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.badge{color:#fff;font:600 11px monospace;padding:2px 8px;border-radius:99px}
+.meta{font:11.5px monospace;color:#516163;margin-bottom:4px}
+img{width:100%;display:block;border-radius:4px;margin-top:6px}
+.lbls{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;font:10.5px monospace;color:#6c7c7e;margin-top:4px}
+</style></head><body>
+<h1>Scene Matching Diagnostic — Visual Evidence (v2: 27/50 Real + 4/4 Controls)</h1>
+<p class="sub">Despeckled coarse-to-fine ZNCC with dense intermediate footprints (256/268/274/322/416/520 px) + multi-sigma refinement. Showing all 31 verified panels (teal border = newly recovered in Round 2).</p>
+<div class="grid">
+        <div class="card">
+          <div class="head"><strong>palsar_280</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP232970570 · (3922, 1759) · 256px · rot270 · lin</div>
+          <div class="meta">native ZNCC: <b>0.9961</b> · raw: 0.9805 · margin: +0.3297 · native Δ: +0.7514 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_280.jpg" alt="palsar_280 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_1753</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP237930550 · (3870, 860) · 416px · rot0 · log</div>
+          <div class="meta">native ZNCC: <b>0.8977</b> · raw: 0.9302 · margin: +0.2358 · native Δ: +0.5298 · prev: unknown</div>
+          <img src="evidence/palsar_1753.jpg" alt="palsar_1753 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_21</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP241870520 · (3937, 2727) · 256px · rot270 · lin</div>
+          <div class="meta">native ZNCC: <b>0.9974</b> · raw: 0.9794 · margin: +0.3411 · native Δ: +0.6898 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_21.jpg" alt="palsar_21 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_3034</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP232970580 · (2912, 3868) · 416px · rot0 · lin</div>
+          <div class="meta">native ZNCC: <b>0.8873</b> · raw: 0.9465 · margin: +0.4982 · native Δ: +0.633 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_3034.jpg" alt="palsar_3034 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_1379</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP241870520 · (1290, 3010) · 416px · rot0 · log</div>
+          <div class="meta">native ZNCC: <b>0.9564</b> · raw: 0.9271 · margin: +0.2268 · native Δ: +0.3675 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_1379.jpg" alt="palsar_1379 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_1578</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP241870520 · (4730, 1290) · 416px · rot0 · log</div>
+          <div class="meta">native ZNCC: <b>0.9183</b> · raw: 0.9241 · margin: +0.4913 · native Δ: +0.5908 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_1578.jpg" alt="palsar_1578 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_2918</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP231220560 · (1248, 1372) · 416px · rot0 · log</div>
+          <div class="meta">native ZNCC: <b>0.9505</b> · raw: 0.9297 · margin: +0.1911 · native Δ: +0.2906 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_2918.jpg" alt="palsar_2918 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_237</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP237930550 · (4310, 507) · 256px · rot270 · lin</div>
+          <div class="meta">native ZNCC: <b>0.9979</b> · raw: 0.981 · margin: +0.2597 · native Δ: +0.5202 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_237.jpg" alt="palsar_237 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_1559</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP237930560 · (3870, 3440) · 416px · rot0 · log</div>
+          <div class="meta">native ZNCC: <b>0.9553</b> · raw: 0.9382 · margin: +0.1653 · native Δ: +0.3371 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_1559.jpg" alt="palsar_1559 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_1375</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP231220560 · (430, 860) · 416px · rot0 · log</div>
+          <div class="meta">native ZNCC: <b>0.9581</b> · raw: 0.9425 · margin: +0.1311 · native Δ: +0.3012 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_1375.jpg" alt="palsar_1375 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_655</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP232970570 · (2691, 467) · 256px · rot180 · lin</div>
+          <div class="meta">native ZNCC: <b>0.9976</b> · raw: 0.982 · margin: +0.2507 · native Δ: +0.4831 · prev: unknown</div>
+          <img src="evidence/palsar_655.jpg" alt="palsar_655 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_2847</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP241870520 · (1248, 1372) · 416px · rot0 · log</div>
+          <div class="meta">native ZNCC: <b>0.9566</b> · raw: 0.9331 · margin: +0.289 · native Δ: +0.4307 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_2847.jpg" alt="palsar_2847 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_2396</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP237930550 · (3362, 1072) · 256px · rot0 · lin</div>
+          <div class="meta">native ZNCC: <b>0.9992</b> · raw: 0.9957 · margin: +0.052 · native Δ: +0.1756 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_2396.jpg" alt="palsar_2396 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>palsar_2409</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP237930550 · (3339, 2623) · 256px · rot0 · lin</div>
+          <div class="meta">native ZNCC: <b>0.9964</b> · raw: 0.9891 · margin: +0.3148 · native Δ: +0.8192 · prev: candidate_needs_review</div>
+          <img src="evidence/palsar_2409.jpg" alt="palsar_2409 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>sentinel_10</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">IW_GRDH_1SDV_017782_01DCBB_DE28 · (11870, 356) · 256px · rot270 · lin</div>
+          <div class="meta">native ZNCC: <b>0.9967</b> · raw: 0.9489 · margin: +0.1771 · native Δ: +0.6228 · prev: unknown</div>
+          <img src="evidence/sentinel_10.jpg" alt="sentinel_10 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>sentinel_1149</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">IW_GRDH_1SDV_017782_01DCBB_DE28 · (8319, 2705) · 416px · rot0 · log</div>
+          <div class="meta">native ZNCC: <b>0.9479</b> · raw: 0.9444 · margin: +0.0751 · native Δ: +0.2819 · prev: unknown</div>
+          <img src="evidence/sentinel_1149.jpg" alt="sentinel_1149 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>sentinel_17</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">IW_GRDH_1SDV_017848_01DEC1_EC32 · (9050, 10879) · 256px · rot270 · log</div>
+          <div class="meta">native ZNCC: <b>0.9879</b> · raw: 0.9535 · margin: +0.1226 · native Δ: +0.4627 · prev: unknown</div>
+          <img src="evidence/sentinel_17.jpg" alt="sentinel_17 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>sentinel_979</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">IW_GRDH_1SDV_017848_01DEC1_C09A · (893, 716) · 520px · rot0 · log</div>
+          <div class="meta">native ZNCC: <b>0.7928</b> · raw: 0.5349 · margin: +0.3329 · native Δ: +0.5459 · prev: unknown</div>
+          <img src="evidence/sentinel_979.jpg" alt="sentinel_979 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card v2">
+          <div class="head"><strong>sentinel_423</strong> <span class="badge" style="background:#0f766e">matched (v2 dense-scale)</span></div>
+          <div class="meta">IW_GRDH_1SDV_017884_01DFD8_8F93 · (3639, 12025) · 268px · rot270 · log_v2_dense_scale</div>
+          <div class="meta">native ZNCC: <b>0.9562</b> · raw: 0.8502 · margin: +0.128 · native Δ: +0.352 · prev: unknown</div>
+          <img src="evidence/sentinel_423.jpg" alt="sentinel_423 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card v2">
+          <div class="head"><strong>sentinel_121</strong> <span class="badge" style="background:#0f766e">matched (v2 dense-scale)</span></div>
+          <div class="meta">IW_GRDH_1SDV_017884_01DFD8_8F93 · (10528, 11433) · 268px · rot270 · log_v2_dense_scale</div>
+          <div class="meta">native ZNCC: <b>0.912</b> · raw: 0.7496 · margin: +0.158 · native Δ: +0.504 · prev: unknown</div>
+          <img src="evidence/sentinel_121.jpg" alt="sentinel_121 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card v2">
+          <div class="head"><strong>sentinel_628</strong> <span class="badge" style="background:#0f766e">matched (v2 dense-scale)</span></div>
+          <div class="meta">IW_GRDH_1SDV_017782_01DCBB_DE28 · (3119, 10065) · 274px · rot180 · log_v2_dense_scale</div>
+          <div class="meta">native ZNCC: <b>0.971</b> · raw: 0.871 · margin: +0.033 · native Δ: +0.085 · prev: unknown</div>
+          <img src="evidence/sentinel_628.jpg" alt="sentinel_628 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>sentinel_57</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">IW_GRDH_1SDV_017782_01DCBB_DE28 · (12478, 5793) · 256px · rot270 · lin</div>
+          <div class="meta">native ZNCC: <b>0.9984</b> · raw: 0.9713 · margin: +0.3309 · native Δ: +0.6735 · prev: unknown</div>
+          <img src="evidence/sentinel_57.jpg" alt="sentinel_57 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>sentinel_732</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">IW_GRDH_1SDV_017782_01DCBB_DE28 · (12964, 4312) · 256px · rot180 · lin</div>
+          <div class="meta">native ZNCC: <b>0.999</b> · raw: 0.974 · margin: +0.1828 · native Δ: +0.4657 · prev: unknown</div>
+          <img src="evidence/sentinel_732.jpg" alt="sentinel_732 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>sentinel_107</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">IW_GRDH_1SDV_017848_01DEC1_EC32 · (7583, 9392) · 256px · rot270 · lin</div>
+          <div class="meta">native ZNCC: <b>0.9972</b> · raw: 0.9624 · margin: +0.2714 · native Δ: +0.7586 · prev: unknown</div>
+          <img src="evidence/sentinel_107.jpg" alt="sentinel_107 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card v2">
+          <div class="head"><strong>sentinel_755</strong> <span class="badge" style="background:#0f766e">matched (v2 dense-scale)</span></div>
+          <div class="meta">IW_GRDH_1SDV_017848_01DEC1_C09A · (6609, 1513) · 322px · rot180 · log_v2_dense_scale</div>
+          <div class="meta">native ZNCC: <b>0.9449</b> · raw: 0.7928 · margin: +0.261 · native Δ: +0.474 · prev: unknown</div>
+          <img src="evidence/sentinel_755.jpg" alt="sentinel_755 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card v2">
+          <div class="head"><strong>sentinel_697</strong> <span class="badge" style="background:#0f766e">matched (v2 dense-scale)</span></div>
+          <div class="meta">IW_GRDH_1SDV_017782_01DCBB_DE28 · (5789, 11603) · 274px · rot180 · log_v2_dense_scale</div>
+          <div class="meta">native ZNCC: <b>0.9757</b> · raw: 0.8967 · margin: +0.07 · native Δ: +0.164 · prev: unknown</div>
+          <img src="evidence/sentinel_697.jpg" alt="sentinel_697 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>sentinel_933</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">IW_GRDH_1SDV_017782_01DCBB_DE28 · (11414, 2862) · 256px · rot0 · lin</div>
+          <div class="meta">native ZNCC: <b>0.992</b> · raw: 0.9142 · margin: +0.2395 · native Δ: +0.8179 · prev: unknown</div>
+          <img src="evidence/sentinel_933.jpg" alt="sentinel_933 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>ctrl_pos_palsar_1</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP231220560 · (1959, 1504) · 256px · rot270 · log</div>
+          <div class="meta">native ZNCC: <b>0.9968</b> · raw: 0.9995 · margin: +0.6511 · native Δ: +0.89 · prev: control</div>
+          <img src="evidence/ctrl_pos_palsar_1.jpg" alt="ctrl_pos_palsar_1 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>ctrl_pos_palsar_2</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">ALPSRP237930550 · (2632, 2209) · 416px · flip_rot180 · log</div>
+          <div class="meta">native ZNCC: <b>0.8876</b> · raw: 0.9995 · margin: +0.5195 · native Δ: +0.6239 · prev: control</div>
+          <img src="evidence/ctrl_pos_palsar_2.jpg" alt="ctrl_pos_palsar_2 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>ctrl_pos_sentinel_1</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">IW_GRDH_1SDV_017848_01DEC1_C09A · (10854, 6698) · 416px · rot0 · log</div>
+          <div class="meta">native ZNCC: <b>0.8827</b> · raw: 0.9996 · margin: +0.3239 · native Δ: +0.8178 · prev: control</div>
+          <img src="evidence/ctrl_pos_sentinel_1.jpg" alt="ctrl_pos_sentinel_1 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div>
+        <div class="card">
+          <div class="head"><strong>ctrl_pos_sentinel_2</strong> <span class="badge" style="background:#1b5e58">matched_high_conf</span></div>
+          <div class="meta">IW_GRDH_1SDV_017855_01DEF7_F48C · (13348, 7921) · 512px · rot90 · log</div>
+          <div class="meta">native ZNCC: <b>0.9029</b> · raw: 0.9997 · margin: +0.3927 · native Δ: +0.7246 · prev: control</div>
+          <img src="evidence/ctrl_pos_sentinel_2.jpg" alt="ctrl_pos_sentinel_2 alignment comparison">
+          <div class="lbls"><span>SOS Patch</span><span>Aligned Source Crop</span><span>Abs Diff</span></div>
+        </div></div></body></html>

@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OceanTrace — The Missing Interval (Top View)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: var(--ui-page, #f7f6f1);
+  color: var(--ui-strong, #1b2425);
+  transition: background .15s linear;
+}
+button { font: inherit; cursor: pointer; }
+button:focus-visible { outline: 2px solid #28a469; outline-offset: 2px; }
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  background: var(--ui-page, #f7f6f1);
+  color: var(--ui-strong, #1b2425);
+}
+
+.plate {
+  position: relative;
+  border: 1px solid var(--ui-border, #d2d6d0);
+  background: var(--ui-card, #fbfaf6);
+  overflow: hidden;
+  padding: 14px 20px 10px;
+  color: var(--ui-mid, #626e70);
+}
+
+.top, .bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font: 600 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.top span:last-child { color: var(--ui-strong, #1b2425); }
+.bottom { font-size: 9.5px; margin-top: 4px; }
+.bottom output { color: var(--ui-strong, #1b2425); text-align: right; }
+
+.stage {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 350px;
+}
+
+.footer-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px 10px;
+}
+.caption {
+  min-height: 54px;
+}
+.caption h1 {
+  font: 400 18px/1.2 Georgia, "Iowan Old Style", serif;
+  letter-spacing: -.01em;
+  margin: 0 0 4px;
+  color: var(--ui-strong, #1b2425);
+}
+.caption p {
+  font-size: 12.5px;
+  color: var(--ui-mid, #626e70);
+  margin: 0;
+  max-width: 620px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.controls button {
+  color: var(--ui-strong, #1b2425);
+  background: transparent;
+  border: 1px solid var(--ui-border, #c8cdc7);
+  border-radius: 4px;
+  padding: 7px 14px;
+  font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  min-width: 64px;
+  transition: border-color .15s, background .15s;
+}
+.controls button:hover {
+  border-color: var(--ui-strong, #1b2425);
+}
+
+.note {
+  font: 9.5px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ui-mid, #626e70);
+  margin: 0;
+  padding: 0 20px 12px;
+}
+
+/* Machine-drawing ink tokens */
+.part { fill: var(--tone-202020, #202020); stroke: var(--tone-8a8a8a, #8a8a8a); stroke-width: 1; stroke-linejoin: round; }
+.fine { fill: none; stroke: var(--tone-444, #444); stroke-width: .75; }
+.hi { stroke: var(--tone-aaa, #aaa); fill: none; stroke-width: .85; }
+.ink { fill: none; stroke: var(--tone-777, #777); stroke-width: .8; }
+.lit { fill: var(--tone-d9d9d9, #d9d9d9); stroke: none; }
+svg text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+@media (max-width: 640px) {
+  .plate { padding: 12px 12px 10px; }
+  .stage { width: 116%; max-width: none; margin-left: -8%; }
+  .footer-bar { flex-direction: column; align-items: flex-start; padding: 12px 12px 8px; gap: 10px; }
+  .caption h1 { font-size: 16px; }
+  .note { padding: 0 12px 10px; font-size: 8.5px; }
+}
+</style>
+</head>
+<body>
+<main aria-label="OceanTrace minimal top-down animation">
+  <div class="plate" id="plate">
+    <div class="top">
+      <span>FIG 02 · OVERHEAD DRAFTING VIEW</span>
+      <span>OCEANTRACE / THE MISSING INTERVAL</span>
+    </div>
+
+    <svg class="stage" viewBox="0 0 900 410" role="img" aria-labelledby="title desc">
+      <title id="title">A vessel disappears from its reported track</title>
+      <desc id="desc">Top-down minimal drafting illustration: a ship sails in morning light transmitting green AIS pings, fades into night, switches its on-board AIS control off (red), discharges oily waste, leaves the slick behind, and restores AIS away from the slick leaving a blank gap in the recorded track.</desc>
+
+      <defs>
+        <radialGradient id="pool">
+          <stop stop-color="#808080" stop-opacity=".08"/>
+          <stop offset="1" stop-color="#808080" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="sarSweepGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#d9822b" stop-opacity="0"/>
+          <stop offset="50%" stop-color="#d9822b" stop-opacity=".28"/>
+          <stop offset="100%" stop-color="#d9822b" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Subtle cartographic coordinate ticks -->
+      <g id="gridTicks" stroke="#444" stroke-width=".5" opacity=".28"></g>
+
+      <!-- Day / Night indicator -->
+      <g id="dayIcon" transform="translate(822 38)" stroke="#777" stroke-width=".9" fill="none">
+        <circle r="6"/>
+        <path d="M0-10v-4M0 10v4M-10 0h-4M10 0h4M7-7l3-3M-7 7l-3 3M7 7l3 3M-7-7l-3-3"/>
+      </g>
+      <g id="nightIcon" transform="translate(822 38)" stroke="#aaa" stroke-width=".9" fill="none" opacity="0">
+        <path d="M5-8A9 9 0 1 0 8 5 8 8 0 0 1 5-8Z"/>
+        <circle cx="-13" cy="-9" r=".8" fill="#aaa" stroke="none"/>
+        <circle cx="-18" cy="2" r=".6" fill="#888" stroke="none"/>
+      </g>
+      <text id="dayText" x="822" y="64" text-anchor="middle" font-size="9" fill="#777" letter-spacing="1">MORNING</text>
+
+      <!-- Camera group -->
+      <g id="camera">
+        <ellipse cx="450" cy="216" rx="340" ry="155" fill="url(#pool)"/>
+
+        <!-- Water drafting marks -->
+        <g id="water" stroke="#353535" stroke-width=".75" fill="none"></g>
+
+        <!-- Recorded AIS tracks (equal length before & after gap) -->
+        <g id="trail" fill="none">
+          <path id="beforeTrack" d="M115 224H220" stroke="#6f6f6f" stroke-width="1.2"/>
+          <path id="afterTrack" d="M622 224H650" stroke="#6f6f6f" stroke-width="1.2" opacity="0"/>
+          <g id="beforePings" fill="#28a469"></g>
+          <g id="afterPings" fill="#28a469" opacity="0"></g>
+        </g>
+
+        <!-- Gap measurement bracket (shown after AIS resumes) -->
+        <g id="gapBracket" opacity="0">
+          <line id="gapLine" x1="416" y1="168" x2="622" y2="168" stroke="#c87d2e" stroke-width="1" stroke-dasharray="4 4"/>
+          <line id="gapL" x1="416" y1="160" x2="416" y2="176" stroke="#c87d2e" stroke-width="1"/>
+          <line id="gapR" x1="622" y1="160" x2="622" y2="176" stroke="#c87d2e" stroke-width="1"/>
+          <text id="gapLabel" x="519" y="158" text-anchor="middle" fill="#c87d2e" font-size="8.5" letter-spacing="1">UNREPORTED INTERVAL</text>
+        </g>
+
+        <!-- Multi-layer organic oil slick with contour rings -->
+        <g id="oil" opacity="0">
+          <path id="oilOuter" d="M-74-9C-72-30-46-35-28-27-14-44 12-35 25-25 45-31 68-19 61-5 88 2 76 23 52 24 38 39 14 29 0 33-21 41-34 21-50 27-74 30-92 8-74-9Z" fill="#101010" fill-opacity=".55" stroke="#5b5b5b" stroke-width=".85"/>
+          <path id="oilMid" d="M-54-6C-48-22-26-22-14-16 0-26 22-20 30-11 46-12 52 4 36 12 24 22 4 16-8 19-24 24-36 12-48 15-62 16-66 4-54-6Z" fill="#0b0b0b" fill-opacity=".85" stroke="#444" stroke-width=".7"/>
+          <path id="oilSheen" d="M-36-3C-20-14-8-6 6-12S34-10 38-2M-38 8C-18 0-6 14 10 7S36 13 42 5" fill="none" stroke="#666" stroke-width=".65"/>
+          <path id="oilSarHighlight" d="M-74-9C-72-30-46-35-28-27-14-44 12-35 25-25 45-31 68-19 61-5 88 2 76 23 52 24 38 39 14 29 0 33-21 41-34 21-50 27-74 30-92 8-74-9Z" fill="none" stroke="#d9822b" stroke-width="1.6" stroke-dasharray="5 3" opacity="0"/>
+        </g>
+
+        <!-- Wake & stern turbulence -->
+        <g id="wake" fill="none" stroke="#555" stroke-width=".85"></g>
+
+        <!-- Overhead Vessel -->
+        <g id="vessel">
+          <!-- Hull silhouette -->
+          <path d="M-89-31L52-31Q82-29 108 0 82 29 52 31H-89Q-95 0-89-31Z" fill="#121212" stroke="#aaa" stroke-width="1.15"/>
+          <path d="M-85-26H51Q76-25 99 0 76 25 51 26H-85Q-89 0-85-26Z" fill="#242424" stroke="#525252" stroke-width=".8"/>
+          <path d="M-80-22H48Q68-22 89 0 68 22 48 22H-80Z" fill="none" stroke="#3b3b3b" stroke-width=".6"/>
+
+          <!-- Deck cargo hatches & fittings -->
+          <g id="deckParts"></g>
+
+          <!-- Accommodation / Bridge block -->
+          <path d="M-75-24H-42V24H-75Z" fill="#181818" stroke="#8a8a8a" stroke-width=".9"/>
+          <rect x="-72" y="-20" width="27" height="40" rx="1" fill="#2c2c2c" stroke="#535353" stroke-width=".7"/>
+          <path d="M-42-20h4v40h-4" fill="#111" stroke="#777" stroke-width=".7"/>
+          <path d="M-40-15v5M-40-7v5M-40 1v5M-40 9v5" stroke="#aaa" stroke-width="1"/>
+
+          <!-- Funnel -->
+          <rect x="-66" y="-7" width="13" height="14" rx="1" fill="#111" stroke="#666" stroke-width=".7"/>
+          <rect x="-63" y="-4" width="7" height="8" rx=".5" fill="#333" stroke="#555" stroke-width=".6"/>
+
+          <!-- Rotating radar bar on bridge roof -->
+          <g id="radarBar" transform="translate(-54 -14)">
+            <line x1="-5" y1="0" x2="5" y2="0" stroke="#aaa" stroke-width="1.2"/>
+            <circle r="1.4" fill="#d9d9d9"/>
+          </g>
+
+          <!-- Lifeboat -->
+          <rect x="-72" y="27" width="20" height="7" rx="3" fill="#333" stroke="#777" stroke-width=".7"/>
+          <path d="M-68 27v7M-57 27v7" class="fine"/>
+
+          <!-- Navigation side lights (subtle glow at night) -->
+          <circle id="portLight" cx="48" cy="-27" r="1.8" fill="#e05252" opacity=".25"/>
+          <circle id="stbdLight" cx="48" cy="27" r="1.8" fill="#28a469" opacity=".25"/>
+
+          <!-- On-board AIS transmitter module: visibly switches green ON <-> red OFF -->
+          <rect x="-32" y="-12" width="19" height="24" rx="1.5" fill="#151515" stroke="#777" stroke-width=".8"/>
+          <rect x="-27" y="-7" width="8" height="14" rx="4" fill="#080808" stroke="#444" stroke-width=".7"/>
+          <rect id="switch" x="-26" y="-6" width="6" height="6" rx="2" fill="#28a469"/>
+          <g id="pulses" fill="none" stroke="#28a469" stroke-width=".95"></g>
+
+          <!-- Bow fittings -->
+          <path d="M80-7v14M76 0h8" class="ink"/>
+          <circle cx="72" cy="-13" r="2.1" class="part"/>
+          <circle cx="72" cy="13" r="2.1" class="part"/>
+          <path d="M67-13h10M67 13h10" class="fine"/>
+
+          <!-- Starboard discharge outlet & plume -->
+          <rect x="2" y="29" width="8" height="3.5" fill="#101010" stroke="#888" stroke-width=".6"/>
+          <g id="discharge" opacity="0">
+            <path d="M6 32Q7 43-2 52" fill="none" stroke="#101010" stroke-width="6.5" stroke-linecap="round"/>
+            <path d="M6 32Q7 43-2 52" fill="none" stroke="#666" stroke-width=".75" stroke-dasharray="3 3"/>
+          </g>
+        </g>
+
+        <!-- Last recorded AIS ping reticle -->
+        <g id="lastDot" opacity="0">
+          <circle cx="447" cy="224" r="3" fill="#e05252"/>
+          <circle cx="447" cy="224" r="8" fill="none" stroke="#e05252" stroke-width=".9"/>
+          <text x="447" y="206" text-anchor="middle" fill="#e05252" font-size="8" letter-spacing=".8">LAST PING</text>
+        </g>
+
+        <!-- Brief SAR satellite pass sweep near the end -->
+        <g id="sarSweep" opacity="0">
+          <rect x="-40" y="70" width="80" height="290" fill="url(#sarSweepGrad)"/>
+          <line x1="0" y1="70" x2="0" y2="360" stroke="#d9822b" stroke-width="1" stroke-dasharray="4 3"/>
+        </g>
+      </g>
+
+      <!-- HUD Readouts -->
+      <g id="txReadout" transform="translate(26 382)">
+        <circle id="statusDot" r="3.2" fill="#28a469"/>
+        <text id="statusText" x="12" y="3" fill="#aaa" font-size="9.5" letter-spacing="1.1">AIS TRANSMITTING</text>
+      </g>
+      <g id="endNote" opacity="0">
+        <text x="874" y="385" text-anchor="end" fill="#c87d2e" font-size="9.5" letter-spacing=".9">SLICK DETECTED · GAP IN AIS RECORD</text>
+      </g>
+    </svg>
+
+    <div class="bottom">
+      <span>TOP VIEW · ILLUSTRATIVE SEQUENCE</span>
+      <output id="readout">01 / 06 · UNDER WAY</output>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <div class="caption" aria-live="polite" aria-atomic="true">
+      <h1 id="heading">A ship. A continuous signal.</h1>
+      <p id="caption">Regular AIS position pings trace the vessel’s passage across the ocean.</p>
+    </div>
+    <div class="controls">
+      <button id="play" aria-label="Pause animation">Pause</button>
+      <button id="replay" aria-label="Replay animation">Replay</button>
+    </div>
+  </div>
+
+  <p class="note">Fictional sequence · time compressed · AIS gaps complicate attribution; they do not prove pollution.</p>
+</main>
+
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const NS = 'http://www.w3.org/2000/svg';
+  const add = (tag, attrs, parent) => {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    parent.appendChild(e);
+    return e;
+  };
+  const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+  const ease = (a, b, t) => { const x = clamp((t - a) / (b - a)); return x * x * (3 - 2 * x); };
+  const mix = (a, b, t) => a + (b - a) * t;
+
+  // Cartographic border ticks
+  for (let x = 60; x <= 840; x += 60) {
+    add('line', { x1: x, y1: 12, x2: x, y2: 18 }, $('gridTicks'));
+    add('line', { x1: x, y1: 356, x2: x, y2: 362 }, $('gridTicks'));
+  }
+
+  // Sparse drafting water marks
+  const waves = [];
+  for (let i = 0; i < 30; i++) {
+    const x = 60 + (i * 137) % 820;
+    const y = 96 + (i * 61) % 240;
+    if (y > 186 && y < 262) continue;
+    waves.push({ x, y, n: add('path', { d: `M${x} ${y}q5-3 10 0t10 0` }, $('water')) });
+  }
+
+  // Deck cargo hatches & bollards
+  for (let i = 0; i < 3; i++) {
+    const x = -3 + i * 21;
+    add('rect', { x, y: -17, width: 16, height: 34, rx: 1, class: 'part' }, $('deckParts'));
+    add('rect', { x: x + 3, y: -14, width: 10, height: 28, rx: .5, class: 'fine' }, $('deckParts'));
+    add('path', { d: `M${x + 8}-16v32`, class: 'fine' }, $('deckParts'));
+    for (const y of [-21, 21]) add('circle', { cx: x + 8, cy: y, r: 1, fill: '#777' }, $('deckParts'));
+  }
+  for (const y of [-28, 28]) {
+    for (const x of [-82, -36, 28, 50]) add('circle', { cx: x, cy: y, r: .65, fill: '#8a8a8a' }, $('deckParts'));
+  }
+
+  // Broadcast rings & wakes
+  const pulseNodes = [0, 1, 2].map(() => add('circle', { cx: -23, cy: 0, r: 15 }, $('pulses')));
+  const wakes = [0, 1, 2, 3].map(() => add('path', { d: '' }, $('wake')));
+
+  // Chapters
+  const scenes = [
+    [0,  'Under Way',  'A ship. A continuous signal.', 'Regular AIS position pings trace the vessel’s passage across the ocean.'],
+    [5,  'Nightfall',  'Morning fades into night.', 'The ship keeps moving. Its green AIS broadcast remains active.'],
+    [10, 'AIS Off',    'The ship switches off its signal.', 'The on-board AIS switch flips off (red). Recorded pings stop at the last position.'],
+    [13, 'Discharge',  'An unreported discharge.', 'Oil and oily sludge enter the water during the silent interval.'],
+    [18, 'Departure',  'The ship leaves. The oil stays.', 'The vessel sails away while the slick spreads and drifts; recorded AIS stays frozen.'],
+    [23, 'Gap',        'The signal returns — with a gap.', 'AIS restarts miles away. A satellite pass sees the slick, but linking it to the vessel requires trajectory and drift evidence.']
+  ];
+
+  // Preserve exact equal-length recorded segments (300.91 world units each)
+  const duration = 42;
+  const cutoff = 220 + 230 * ease(0, 13, 10) - 3;
+  const firstLength = cutoff - 115;
+  const resumeStart = 622.3760932944606;
+
+  // Discrete AIS ping dots along both segments
+  const pingSpacing = 25;
+  const beforePingDots = [];
+  for (let px = 120; px <= cutoff; px += pingSpacing) {
+    beforePingDots.push({ x: px, n: add('circle', { cx: px, cy: 224, r: 2.1, opacity: 0 }, $('beforePings')) });
+  }
+  const afterPingDots = [];
+  for (let px = resumeStart; px <= resumeStart + firstLength; px += pingSpacing) {
+    afterPingDots.push({ x: px, n: add('circle', { cx: px, cy: 224, r: 2.1, opacity: 0 }, $('afterPings')) });
+  }
+
+  // Align gap bracket precisely to [cutoff, resumeStart]
+  $('gapLine').setAttribute('x1', cutoff);
+  $('gapLine').setAttribute('x2', resumeStart);
+  $('gapL').setAttribute('x1', cutoff); $('gapL').setAttribute('x2', cutoff);
+  $('gapR').setAttribute('x1', resumeStart); $('gapR').setAttribute('x2', resumeStart);
+  $('gapLabel').setAttribute('x', (cutoff + resumeStart) / 2);
+
+  let t = 0;
+  let playing = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let visible = true;
+  let last = null;
+  let raf = null;
+  let chapter = -1;
+
+  function state(time) {
+    return {
+      t: time,
+      off: time >= 10 && time < 23,
+      night: ease(5, 9, time),
+      spill: ease(13, 18, time),
+      drift: ease(18, 38, time),
+      x: time < 13
+        ? mix(220, 450, ease(0, 13, time))
+        : time < 23
+          ? mix(450, resumeStart, ease(18, 23, time))
+          : mix(resumeStart, resumeStart + firstLength + 95, ease(23, 38, time)),
+      zoom: 1 + 0.42 * ease(8, 11, time) - 0.42 * ease(19, 25, time) - 0.34 * ease(25, 38, time),
+      center: 450 + 160 * ease(25, 38, time)
+    };
+  }
+
+  // Light morning -> Dark night monochrome ink mapper
+  const expand = h => h.length === 4 ? '#' + h.slice(1).split('').map(c => c + c).join('') : h;
+  function themeInk(hex, night) {
+    const dark = parseInt(expand(hex).slice(1, 3), 16);
+    const light = dark < 65 ? 250 - dark : dark < 100 ? 215 - dark : dark < 160 ? 200 - dark : dark < 200 ? 205 - dark : 248 - dark;
+    const v = Math.round(mix(light, dark, night)).toString(16).padStart(2, '0');
+    return '#' + v + v + v;
+  }
+
+  const fixedColors = new Set(['#28a469', '#e05252', '#c87d2e', '#d9822b']);
+  const tones = new Set(['#202020', '#8a8a8a', '#444', '#aaa', '#777', '#d9d9d9']);
+  document.querySelectorAll('svg [fill], svg [stroke], svg [stop-color]').forEach(el => {
+    for (const attr of ['fill', 'stroke', 'stop-color']) {
+      const value = el.getAttribute(attr);
+      if (value && /^#[0-9a-f]{3,6}$/i.test(value) && !fixedColors.has(value.toLowerCase())) {
+        tones.add(value);
+        el.setAttribute(attr, `var(--tone-${value.slice(1)})`);
+      }
+    }
+  });
+
+  function applyTheme(n) {
+    const root = document.documentElement;
+    const ink = ease(.58, .92, n);
+    for (const h of tones) root.style.setProperty('--tone-' + h.slice(1), themeInk(h, ink));
+    for (const [key, light, dark] of [
+      ['page', 247, 13],
+      ['card', 251, 20],
+      ['strong', 27, 218],
+      ['mid', 96, 146],
+      ['border', 208, 54]
+    ]) {
+      const v = Math.round(mix(light, dark, ['strong', 'mid'].includes(key) ? ink : n)).toString(16).padStart(2, '0');
+      root.style.setProperty('--ui-' + key, '#' + v + v + v);
+    }
+  }
+
+  function draw() {
+    const s = state(t);
+    applyTheme(s.night);
+
+    $('dayIcon').setAttribute('opacity', 1 - s.night);
+    $('nightIcon').setAttribute('opacity', s.night);
+    $('dayText').textContent = s.night > .5 ? 'NIGHT' : 'MORNING';
+
+    $('vessel').setAttribute('transform', `translate(${s.x} 224)`);
+    $('camera').setAttribute('transform', `translate(${450 - s.center * s.zoom} ${224 * (1 - s.zoom)}) scale(${s.zoom})`);
+
+    $('radarBar').setAttribute('transform', `translate(-54 -14) rotate(${(t * 90) % 360})`);
+    const navOp = mix(.22, .95, s.night);
+    $('portLight').setAttribute('opacity', navOp);
+    $('stbdLight').setAttribute('opacity', navOp);
+
+    waves.forEach((w, i) => w.n.setAttribute('transform', `translate(${-t * .55} ${Math.sin(t * .45 + i) * .8})`));
+
+    const wakeOp = .65 - .48 * ease(11, 13.5, t) + .48 * ease(18, 21, t);
+    wakes.forEach((w, i) => {
+      const side = i % 2 ? 1 : -1;
+      const d = 6 + Math.floor(i / 2) * 7;
+      w.setAttribute('d', `M${s.x - 91} ${224 + side * d}Q${s.x - 126} ${224 + side * (d + 6)} ${s.x - 166 - i * 8} ${224 + side * (d + 12)}`);
+      w.setAttribute('opacity', wakeOp);
+    });
+
+    let switchY = mix(-6, 0, ease(9.6, 10, t));
+    if (t >= 22.6) switchY = mix(0, -6, ease(22.6, 23, t));
+    $('switch').setAttribute('y', switchY);
+    $('switch').setAttribute('fill', s.off ? '#e05252' : '#28a469');
+
+    $('pulses').setAttribute('opacity', s.off ? 0 : 1);
+    pulseNodes.forEach((p, i) => {
+      const q = (t * .65 + i / 3) % 1;
+      p.setAttribute('r', 16 + q * 44);
+      p.setAttribute('opacity', (1 - q) * .65);
+    });
+
+    const beforeEnd = Math.min(cutoff, s.x - 3);
+    $('beforeTrack').setAttribute('d', `M115 224H${beforeEnd}`);
+    beforePingDots.forEach(d => d.n.setAttribute('opacity', d.x <= beforeEnd ? .9 : 0));
+
+    const afterEnd = Math.max(resumeStart, Math.min(resumeStart + firstLength, s.x - 95));
+    $('afterTrack').setAttribute('d', `M${resumeStart} 224H${afterEnd}`);
+    $('afterTrack').setAttribute('opacity', t >= 23 ? 1 : 0);
+    $('afterPings').setAttribute('opacity', t >= 23 ? 1 : 0);
+    afterPingDots.forEach(d => d.n.setAttribute('opacity', t >= 23 && d.x <= afterEnd ? .9 : 0));
+
+    $('lastDot').setAttribute('transform', `translate(${cutoff - 447} 0)`);
+    $('lastDot').setAttribute('opacity', ease(10, 10.6, t));
+
+    $('gapBracket').setAttribute('opacity', ease(25, 27.5, t));
+
+    $('statusDot').setAttribute('fill', s.off ? '#e05252' : '#28a469');
+    $('statusText').textContent = s.off ? 'AIS SILENT · NO PINGS' : 'AIS TRANSMITTING';
+
+    const oilOp = ease(13, 14.2, t);
+    const sx = .08 + s.spill * 1.12 + s.drift * .24;
+    const sy = .08 + s.spill * .82 + s.drift * .10;
+    const ox = 447 + s.drift * 16;
+    const oy = 276 + s.drift * 8;
+    $('oil').setAttribute('opacity', oilOp);
+    $('oil').setAttribute('transform', `translate(${ox} ${oy}) scale(${sx} ${sy})`);
+    $('discharge').setAttribute('opacity', ease(13, 13.4, t) * (1 - ease(17.5, 18, t)));
+
+    const sweepP = ease(32, 37, t);
+    if (sweepP > 0 && sweepP < 1) {
+      $('sarSweep').setAttribute('opacity', Math.sin(sweepP * Math.PI));
+      $('sarSweep').setAttribute('transform', `translate(${mix(280, 680, sweepP)} 0)`);
+    } else {
+      $('sarSweep').setAttribute('opacity', 0);
+    }
+    $('oilSarHighlight').setAttribute('opacity', ease(34, 36.2, t));
+    $('endNote').setAttribute('opacity', ease(34.5, 36.5, t));
+
+    let c = 0;
+    scenes.forEach((a, i) => { if (t >= a[0]) c = i; });
+    if (c !== chapter) {
+      chapter = c;
+      $('heading').textContent = scenes[c][2];
+      $('caption').textContent = scenes[c][3];
+      $('readout').textContent = `0${c + 1} / 06 · ${scenes[c][1].toUpperCase()}`;
+    }
+  }
+
+  function setPlay(v) {
+    playing = v;
+    last = null;
+    $('play').textContent = v ? 'Pause' : 'Play';
+    $('play').setAttribute('aria-label', v ? 'Pause animation' : 'Play animation');
+    start();
+  }
+
+  function tick(now) {
+    raf = null;
+    if (playing && visible && !document.hidden) {
+      if (last !== null) t = Math.min(duration, t + Math.min(.05, (now - last) / 1000));
+      last = now;
+      draw();
+      if (t >= duration) setPlay(false);
+    } else {
+      last = null;
+    }
+    start();
+  }
+
+  function start() {
+    if (!raf && playing && visible && !document.hidden) raf = requestAnimationFrame(tick);
+  }
+
+  $('play').onclick = () => { if (t >= duration) t = 0; setPlay(!playing); draw(); };
+  $('replay').onclick = () => { t = 0; draw(); setPlay(true); };
+
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' && !['INPUT', 'BUTTON', 'A'].includes(document.activeElement.tagName)) {
+      e.preventDefault();
+      $('play').click();
+    }
+  });
+
+  new IntersectionObserver(es => {
+    visible = es[es.length - 1].isIntersecting;
+    last = null;
+    start();
+  }).observe($('plate'));
+
+  document.addEventListener('visibilitychange', () => { last = null; start(); });
+  matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', e => { if (e.matches) setPlay(false); });
+
+  window.oceanTraceTop = {
+    seek(v) { t = clamp(v, 0, duration); setPlay(false); draw(); },
+    state() { return { ...state(t), playing, chapter, firstLength }; }
+  };
+
+  setPlay(playing);
+  draw();
+})();
+</script>
+</body>
+</html>

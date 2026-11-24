@@ -1,0 +1,12 @@
+cache/
+mlruns/
+evidence/
+pilot_v2_verify/
+pilot_v3_mask_chain/
+full_v2/evidence/
+full_v2/stage2_ckpt/
+full_v2/coarse_*.json
+full_v2/results.json
+full_v3_mask_chain/scene_canvases/
+*.npy
+*.jpg
