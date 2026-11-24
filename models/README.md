@@ -9,13 +9,13 @@ Run these commands from the OceanTrace repository root. The original runs used P
 ```sh
 cd models
 uv venv --python 3.12.12 .venv
-uv pip sync --python .venv/bin/python requirements.lock
+uv pip sync --python .venv/bin/python setup/requirements.lock
 uv venv --python 3.12.12 .venv-deeplab
-uv pip sync --python .venv-deeplab/bin/python requirements-deeplab.lock
+uv pip sync --python .venv-deeplab/bin/python setup/requirements-deeplab.lock
 
 git clone https://github.com/CUG-URS/Marine-Oil-Spill-Detection-Network-CBDNet.git upstream
 git -C upstream checkout --detach ba3aa2e854f8e7ff1fd72fbfd5ce37e864c6d7ad
-.venv/bin/python download_sos_palsar.py
+.venv/bin/python setup/download_sos_palsar.py
 ```
 
 The trainers reuse the pinned CBD-Net checkout for the model or shared helpers. The downloader retrieves the [authors' original files](https://drive.google.com/drive/folders/1KyrtyHkK3IC1_3mUvKA2B2H112uo3J1K) into `original-palsar/{train,test}/`. It checks each file against the committed SHA-256 listing and verifies its size and image format. Rerun it to resume a partial download. A successful run writes `verified-sha256.txt`. The [DagsHub dataset view](https://dagshub.com/rxchitrx/OceanTrace/datasets/dataset/4200/gallery?query=e30=) indexes the same release. See the [authors' usage terms](https://grzy.cug.edu.cn/zhuqiqi/zh_CN/yjgk/32368/list/index.htm) before using or sharing the data.
@@ -62,5 +62,4 @@ Add `--mlflow` to a full training command to log settings and results. By defaul
 
 - `train_cbdnet.py`, `train_deeplabv3plus_mobilenetv2.py`, `train_ofcn.py`, and `train_shaban_cnn_unet.py` are the single-model training entry points.
 - `ofcn_and_shaban_models.py` defines OFCN, the Shaban-style CNN gate, and U-Net; `baseline_runner.py` holds their shared training/eval helpers.
-- `download_sos_palsar.py`, `drive-manifest.jsonl`, and `expected-sha256.txt` restore and verify the author split.
-- The two lockfiles pin the dependencies from the original environments. Install each in its own virtual environment as shown above.
+- `setup/` holds the dataset downloader (`download_sos_palsar.py`), Drive manifest, SHA-256 checksums, DagsHub dataset pointer, and pinned environment lockfiles (`requirements.lock`, `requirements-deeplab.lock`).

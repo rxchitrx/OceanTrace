@@ -102,7 +102,7 @@ def tracking(args, work, config, start_epoch):
                 'The paper used five-class Sentinel-1 inputs. This adaptation compares '
                 'oil segmentation against CBD-Net and the proposed OceanTrace model.'
             )
-            snapshot = ROOT / 'sos-original-palsar-v1.dagshub.dataset.json'
+            snapshot = ROOT / 'setup' / 'sos-original-palsar-v1.dagshub.dataset.json'
             fingerprint = hashlib.sha256((ROOT / 'verified-sha256.txt').read_bytes()).hexdigest()
             if snapshot.is_file() and fingerprint == '1111cd0b07ef7cc87e62c68e08f34ae259b1d6f50a31bc1b8cab4f06b839b8d7':
                 dataset = json.loads(snapshot.read_text())
@@ -160,7 +160,7 @@ def main():
                   device=device.type, seed=seed, torch=torch.__version__, batch=4,
                   shuffle=True, drop_last=True,
                   initial_lr=2e-4, max_epochs=1 if smoke else args.epochs,
-                  manifest_sha256=hashlib.sha256((ROOT / 'drive-manifest.jsonl').read_bytes()).hexdigest())
+                  manifest_sha256=hashlib.sha256((ROOT / 'setup' / 'drive-manifest.jsonl').read_bytes()).hexdigest())
     (work / 'config.json').write_text(json.dumps(config, indent=2)+'\n')
     print(config, flush=True)
     loader = torch.utils.data.DataLoader(ImageFolder(ids, str(DATA / 'train') + '/'),

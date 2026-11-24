@@ -12,19 +12,20 @@ from pathlib import Path
 import requests
 from PIL import Image
 
-ROOT = Path(__file__).resolve().parent
+SETUP_DIR = Path(__file__).resolve().parent
+ROOT = SETUP_DIR.parent
 DEST = ROOT / 'original-palsar'
 COUNTS = {'train': 3101, 'test': 776}
 CLIENT = local()
 PATTERN = re.compile(r'(\d+)_(sat\.jpg|mask\.png)')
-CHECKSUMS = ROOT / 'expected-sha256.txt'
+CHECKSUMS = SETUP_DIR / 'expected-sha256.txt'
 VERIFIED = ROOT / 'verified-sha256.txt'
 
 def manifest():
     rows = []
     names = defaultdict(set)
     seen = set()
-    for line in (ROOT / 'drive-manifest.jsonl').read_text().splitlines():
+    for line in (SETUP_DIR / 'drive-manifest.jsonl').read_text().splitlines():
         row = json.loads(line)
         match = PATTERN.fullmatch(row['name'])
         if not match or row['id'] in seen or row['size'] <= 0:

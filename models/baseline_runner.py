@@ -275,7 +275,7 @@ def tracking(enabled, work, config):
     with run:
         if not existing:
             notes = description
-            snapshot = ROOT / f'{DATASET}.dagshub.dataset.json'
+            snapshot = ROOT / 'setup' / f'{DATASET}.dagshub.dataset.json'
             tags = {'dataset_version': DATASET}
             if snapshot.is_file():
                 dataset = json.loads(snapshot.read_text())
