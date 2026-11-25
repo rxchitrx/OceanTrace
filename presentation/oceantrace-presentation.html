@@ -1268,7 +1268,7 @@ main{max-width:none!important}
       <div class="kpi-label">Stage 01 · Computer Vision</div>
       <h3>SAR Oil-Slick Segmentation</h3>
       <p class="small">Takes satellite radar patches (256×256) and labels every pixel as oil or open water so investigators know the exact shape and size of a slick.</p>
-      <p class="small" style="margin-bottom:0"><strong>Progress:</strong> 8,070 pairs cleaned; 3 published models trained (up to <strong>71.8% Oil IoU</strong>); leak-free dataset split created.</p>
+      <p class="small" style="margin-bottom:0"><strong>Progress:</strong> 8,070 pairs cleaned; 4 published models trained (up to <strong>71.8% Oil IoU</strong>); leak-free dataset split created.</p>
     </div>
     <div class="card amber-left">
       <div class="kpi-label">Stage 02 · Sequence Modeling</div>
@@ -1424,10 +1424,10 @@ main{max-width:none!important}
   </div>
 </section>
 
-<section class="slide" data-title="Baseline Results · 3 Trained Models">
+<section class="slide" data-title="Baseline Results · 4 Trained Models">
   <div class="eyebrow">Stage 01 · Reproduced Segmentation Baselines</div>
-  <h2>Three published oil-slick models trained and benchmarked.</h2>
-  <p class="lead">To establish fair reference scores before designing our own model, we trained three published architectures on the verified author ALOS PALSAR split (3,101 training / 776 test patches) and logged every run in MLflow.</p>
+  <h2>Four published oil-slick models trained and benchmarked.</h2>
+  <p class="lead">All four published architectures were trained on the verified author ALOS PALSAR split (3,101 training / 776 test patches) and tracked in DagsHub MLflow.</p>
   <div class="card" style="margin-bottom:14px">
     <table>
       <thead>
@@ -1452,17 +1452,23 @@ main{max-width:none!important}
           <td>62.1%</td><td>76.7%</td><td>69.6%</td><td>85.3%</td>
           <td><a href="https://dagshub.com/rxchitrx/OceanTrace.mlflow" target="_blank" rel="noopener">Run <code>4713eae3</code> ↗</a></td>
         </tr>
+        <tr>
+          <td><strong>Shaban CNN Gate + U-Net</strong></td>
+          <td><a href="https://doi.org/10.3390/s21072351" target="_blank" rel="noopener">Shaban et al., 2021 (Sensors)</a></td>
+          <td>46.6%</td><td>63.6%</td><td>54.9%</td><td>75.5%</td>
+          <td><a href="https://dagshub.com/rxchitrx/OceanTrace.mlflow" target="_blank" rel="noopener">Run <code>a94592eb</code> ↗</a></td>
+        </tr>
       </tbody>
     </table>
   </div>
   <div class="grid-2">
     <div class="card accent-left">
-      <h3>What These Results Show</h3>
-      <p class="small" style="margin:0"><strong>DeepLabv3+</strong> achieves the highest overall overlap (<strong>71.8% Oil IoU</strong>, +9.7 points over CBDNet) with far fewer false alarms (82.5% precision). <strong>OFCN</strong> captures the most oil pixels overall (<strong>89.1% recall</strong>) with a lighter network.</p>
+      <h3>Key Comparison Findings</h3>
+      <p class="small" style="margin:0"><strong>DeepLabv3+</strong> leads overall (<strong>71.8% Oil IoU</strong>, <strong>82.5% precision</strong>). <strong>OFCN</strong> captures the most oil pixels (<strong>89.1% recall</strong>). Full-patch single-stage models beat the 64×64 crop-based Shaban pipeline by +15.5 to +25.2 Oil IoU.</p>
     </div>
     <div class="card amber-left">
-      <h3>Fourth Baseline &amp; Leak-Free Next Step</h3>
-      <p class="small" style="margin:0">The two-stage CNN gate + U-Net from <a href="https://doi.org/10.3390/s21072351" target="_blank" rel="noopener">Shaban et al., 2021 (Sensors)</a> is implemented in <code>models/</code> as our 4th baseline. Next, we will retrain these models on our <strong>leak-free split</strong> to measure true unseen-scene accuracy.</p>
+      <h3>Shaban Gate Ablation &amp; Next Step</h3>
+      <p class="small" style="margin:0">Shaban's Stage-1 CNN gate (<strong>89.9% specificity</strong>, rejecting 5,971/12,416 water crops) boosted its U-Net from <strong>30.6% → 46.6% Oil IoU</strong> (+16.0 pts). Next, we will retrain on our <strong>leak-free split</strong> to measure unseen-scene accuracy.</p>
     </div>
   </div>
 </section>
@@ -1616,7 +1622,7 @@ main{max-width:none!important}
       <div class="kpi-label">Completed &amp; Verified</div>
       <h3>Achieved So Far</h3>
       <ul class="clean" style="margin-top:8px">
-        <li><strong>Three Segmentation Baselines Trained:</strong> DeepLabv3+ (71.8% Oil IoU), OFCN (70.4%), and CBDNet (62.1%) reproduced and logged to DagsHub MLflow.</li>
+        <li><strong>Four Segmentation Baselines Trained:</strong> DeepLabv3+ (71.8% Oil IoU), OFCN (70.4%), CBDNet (62.1%), and Shaban CNN+U-Net (46.6%) logged to DagsHub MLflow.</li>
         <li><strong>SOS Provenance &amp; Leakage Audit:</strong> Mapped 3,605 patches to exact GPS/UTC coordinates, proved 19/20 scenes leak, caught 719 cross-sensor mislabels, and built a leak-free split.</li>
         <li><strong>Real Vessel Data Prepared:</strong> Cleaned 2.23M Gulf AIS records and matched 379K 2010 records to our Gulf of Mexico satellite scenes.</li>
         <li><strong>Clean Engineering Pipeline:</strong> Modular 1-model-per-script codebase in <code>models/</code>, reproducible DVC datasets, and experiment tracking.</li>
@@ -1644,7 +1650,7 @@ main{max-width:none!important}
         <button class="jump-btn" data-jump="1">↺ Problem Animation</button>
         <button class="jump-btn" data-jump="3">↺ SAR Segmentation Check</button>
         <button class="jump-btn" data-jump="5">↺ Leakage &amp; Mislabeling Audit</button>
-        <button class="jump-btn" data-jump="7">↺ 3-Model Results &amp; MLflow</button>
+        <button class="jump-btn" data-jump="7">↺ 4-Model Results &amp; MLflow</button>
         <button class="jump-btn" data-jump="9">↺ Observed AIS Speed Chart</button>
       </div>
       <div class="hero-meta">
