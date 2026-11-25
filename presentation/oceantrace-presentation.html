@@ -1373,6 +1373,57 @@ main{max-width:none!important}
   </div>
 </section>
 
+<section class="slide" data-title="Evaluation Metrics &amp; Formulas">
+  <div class="eyebrow">Stage 01 · Segmentation Evaluation</div>
+  <h2>How we score oil-slick segmentation masks.</h2>
+  <p class="lead">Plain pixel accuracy is misleading on ocean radar because over 80% of most patches is open water. Instead, we score how accurately the predicted oil region overlaps the true labeled slick.</p>
+  <div class="card" style="padding:14px 18px;margin-bottom:14px">
+    <svg viewBox="0 0 880 120" width="100%" role="img" aria-label="Overlap diagram of true oil mask versus predicted oil mask showing FN, TP, and FP">
+      <rect x="1" y="1" width="878" height="118" rx="6" fill="#f7f6f1" stroke="#cfd4ce"/>
+      <ellipse cx="215" cy="60" rx="110" ry="42" fill="#6c7c7e" fill-opacity=".22" stroke="#516163" stroke-width="1.6"/>
+      <ellipse cx="325" cy="60" rx="110" ry="42" fill="#b86f28" fill-opacity=".22" stroke="#b86f28" stroke-width="1.6"/>
+      <path d="M270 25 A110 42 0 0 1 270 95 A110 42 0 0 1 270 25 Z" fill="#1b5e58" fill-opacity=".45"/>
+      <text x="165" y="56" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12" font-weight="600" fill="#3a4648">FN</text>
+      <text x="165" y="72" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#516163">Missed oil</text>
+      <text x="270" y="56" text-anchor="middle" font-family="ui-monospace,monospace" font-size="13" font-weight="700" fill="#123e3b">TP</text>
+      <text x="270" y="72" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#123e3b">True oil match</text>
+      <text x="375" y="56" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12" font-weight="600" fill="#8c531c">FP</text>
+      <text x="375" y="72" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#8c531c">False alarm</text>
+      <text x="108" y="19" font-family="ui-monospace,monospace" font-size="10" fill="#516163">TRUE OIL MASK</text>
+      <text x="330" y="19" font-family="ui-monospace,monospace" font-size="10" fill="#8c531c">PREDICTED OIL MASK</text>
+      <line x1="470" y1="16" x2="470" y2="104" stroke="#cfd4ce" stroke-width="1"/>
+      <text x="494" y="36" font-family="ui-monospace,monospace" font-size="11" font-weight="600" fill="#123e3b">TP = True Positive</text>
+      <text x="635" y="36" font-family="system-ui,sans-serif" font-size="12" fill="#516163">Oil pixel correctly detected as oil</text>
+      <text x="494" y="64" font-family="ui-monospace,monospace" font-size="11" font-weight="600" fill="#8c531c">FP = False Positive</text>
+      <text x="635" y="64" font-family="system-ui,sans-serif" font-size="12" fill="#516163">Water pixel wrongly flagged as oil</text>
+      <text x="494" y="92" font-family="ui-monospace,monospace" font-size="11" font-weight="600" fill="#3a4648">FN = False Negative</text>
+      <text x="635" y="92" font-family="system-ui,sans-serif" font-size="12" fill="#516163">Real oil pixel missed by the model</text>
+    </svg>
+  </div>
+  <div class="grid-2">
+    <div class="card accent-left">
+      <div class="kpi-label">Strict Overlap Score</div>
+      <h3>Oil IoU <code style="font-size:13px;margin-left:6px">TP / (TP + FP + FN)</code></h3>
+      <p class="small" style="margin:0">Overlap divided by the total combined area of true and predicted oil. Penalizes both missed oil and false alarms — our strictest headline metric.</p>
+    </div>
+    <div class="card accent-left">
+      <div class="kpi-label">Paper Comparison Score</div>
+      <h3>Oil Dice (F1) <code style="font-size:13px;margin-left:6px">2·TP / (2·TP + FP + FN)</code></h3>
+      <p class="small" style="margin:0">Weights the true overlap twice relative to total oil pixels. Standard metric reported in oil-spill and medical segmentation papers.</p>
+    </div>
+    <div class="card amber-left">
+      <div class="kpi-label">False-Alarm Control</div>
+      <h3>Precision <code style="font-size:13px;margin-left:6px">TP / (TP + FP)</code></h3>
+      <p class="small" style="margin:0">Of all pixels the model flagged as oil, how many were genuinely oil? High precision means fewer false alarms on calm water or look-alikes.</p>
+    </div>
+    <div class="card amber-left">
+      <div class="kpi-label">Spill Detection Coverage</div>
+      <h3>Recall <code style="font-size:13px;margin-left:6px">TP / (TP + FN)</code></h3>
+      <p class="small" style="margin:0">Of all real oil pixels in the image, how many did the model catch? High recall means very little real oil goes undetected.</p>
+    </div>
+  </div>
+</section>
+
 <section class="slide" data-title="Baseline Results · 3 Trained Models">
   <div class="eyebrow">Stage 01 · Reproduced Segmentation Baselines</div>
   <h2>Three published oil-slick models trained and benchmarked.</h2>
@@ -1593,8 +1644,8 @@ main{max-width:none!important}
         <button class="jump-btn" data-jump="1">↺ Problem Animation</button>
         <button class="jump-btn" data-jump="3">↺ SAR Segmentation Check</button>
         <button class="jump-btn" data-jump="5">↺ Leakage &amp; Mislabeling Audit</button>
-        <button class="jump-btn" data-jump="6">↺ 3-Model Results &amp; MLflow</button>
-        <button class="jump-btn" data-jump="8">↺ Observed AIS Speed Chart</button>
+        <button class="jump-btn" data-jump="7">↺ 3-Model Results &amp; MLflow</button>
+        <button class="jump-btn" data-jump="9">↺ Observed AIS Speed Chart</button>
       </div>
       <div class="hero-meta">
         <div class="person"><strong>Rachit Mittal</strong><span class="usn">1RV24CI089</span></div>
@@ -1617,7 +1668,7 @@ main{max-width:none!important}
 <!-- Bottom presenter navigation dock -->
 <nav class="nav-dock" aria-label="Slide navigation">
   <button id="prevBtn" title="Previous slide (←)">← Prev</button>
-  <button id="counterBtn" class="counter-btn" title="Open slide overview (G)">01 / 13</button>
+  <button id="counterBtn" class="counter-btn" title="Open slide overview (G)">01 / 14</button>
   <button id="nextBtn" title="Next slide (→)">Next →</button>
 </nav>
 
