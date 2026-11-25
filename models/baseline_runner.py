@@ -2,7 +2,11 @@
 
 import argparse
 from contextlib import contextmanager
-import fcntl
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
+    import msvcrt
 from functools import lru_cache
 import hashlib
 import json
@@ -395,8 +399,11 @@ def run_cli(baseline: str, description: str | None = None):
     work.mkdir(exist_ok=True)
     with (work / '.lock').open('a') as lock:
         try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
+            if fcntl:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            else:
+                msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+        except OSError:
             raise SystemExit(f'A trainer is already using {work}') from None
         run(args, work, ids, test_ids, fingerprint)
 

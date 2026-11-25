@@ -1,0 +1,30 @@
+{
+  "baseline": "shaban",
+  "device": "cuda",
+  "seed": 26143,
+  "torch": "2.14.1+cu126",
+  "smoke_steps": 0,
+  "dataset": "sos-original-palsar-v1",
+  "dataset_checksums_sha256": "1111cd0b07ef7cc87e62c68e08f34ae259b1d6f50a31bc1b8cab4f06b839b8d7",
+  "test_pairs": 776,
+  "mask_threshold": 128,
+  "prediction_threshold": 0.5,
+  "test_views": 1,
+  "stages": {
+    "gate": {
+      "batch": 16,
+      "lr": 5e-05,
+      "epochs": 40,
+      "loss": "cross_entropy",
+      "training_examples": 37612
+    },
+    "unet": {
+      "batch": 16,
+      "lr": 0.0002,
+      "epochs": 40,
+      "loss": "generalized_dice",
+      "base_channels": 16,
+      "training_examples": 4139
+    }
+  }
+}
