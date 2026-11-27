@@ -317,7 +317,6 @@ def run(args, work, ids, test_ids, fingerprint):
         training_sets = {'ofcn': TrainPatches(ids, ofcn=True)}
         descriptions = {'ofcn': (OFCN, nn.BCEWithLogitsLoss(pos_weight=torch.tensor([2.0], device=device)))}
     else:
-        else:
         gate_crops, unet_crops = shaban_training_crops(ids, min_oil=args.min_oil)
         unet_stage = dict(batch=16, lr=2e-4, epochs=40, loss='generalized_dice',
                           base_channels=16)
