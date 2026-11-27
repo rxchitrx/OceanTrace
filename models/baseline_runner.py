@@ -114,7 +114,7 @@ class TrainPatches(Dataset):
         return to_tensor(image), mask_tensor
 
 
-def shaban_training_crops(ids):
+def shaban_training_crops(ids, min_oil: float = 0.40):
     groups = [[], []]
     segmentation = []
     for sample in ids:
@@ -124,11 +124,12 @@ def shaban_training_crops(ids):
             label = int(oil > 0.01)
             record = (sample, index, label)
             groups[label].append(record)
-            if 0.40 <= oil <= 0.60:
+            max_oil = 1.0 if min_oil < 0.40 else 0.60
+            if min_oil <= oil <= max_oil:
                 segmentation.append(record)
     count = min(map(len, groups))
     if not count or not segmentation:
-        raise ValueError('Need both gate classes and crops with 40–60% oil')
+        raise ValueError('Need both gate classes and matching oil crops')
     rng = random.Random(SEED)
     balanced = rng.sample(groups[0], count) + rng.sample(groups[1], count)
     rng.shuffle(balanced)
@@ -316,10 +317,14 @@ def run(args, work, ids, test_ids, fingerprint):
         training_sets = {'ofcn': TrainPatches(ids, ofcn=True)}
         descriptions = {'ofcn': (OFCN, nn.BCEWithLogitsLoss(pos_weight=torch.tensor([2.0], device=device)))}
     else:
-        gate_crops, unet_crops = shaban_training_crops(ids)
+        else:
+        gate_crops, unet_crops = shaban_training_crops(ids, min_oil=args.min_oil)
+        unet_stage = dict(batch=16, lr=2e-4, epochs=40, loss='generalized_dice',
+                          base_channels=16)
+        if args.min_oil != 0.40:
+            unet_stage['min_oil'] = args.min_oil
         stages = {'gate': dict(batch=16, lr=5e-5, epochs=40, loss='cross_entropy'),
-                  'unet': dict(batch=16, lr=2e-4, epochs=40, loss='generalized_dice',
-                               base_channels=16)}
+                  'unet': unet_stage}
         training_sets = {'gate': TrainPatches(gate_crops, gate=True),
                          'unet': TrainPatches(unet_crops)}
         descriptions = {'gate': (ShabanGate, nn.CrossEntropyLoss()),
@@ -382,6 +387,10 @@ def run_cli(baseline: str, description: str | None = None):
     parser.add_argument('--smoke-steps', type=int, default=0, help='Batches per stage in a one-epoch smoke test')
     parser.add_argument('--epochs', type=int, help='Override the full-run epoch cap for each stage')
     parser.add_argument('--mlflow', action='store_true', help='Log to the OceanTrace DagsHub project')
+    parser.add_argument('--min-oil', type=float, default=0.40,
+                        help='Minimum oil fraction for Shaban U-Net training crops')
+    parser.add_argument('--run-name', type=str, default=None,
+                        help='Custom output folder name under models/')
     args = parser.parse_args()
     args.baseline = baseline
     if args.smoke_steps < 0 or (args.epochs is not None and args.epochs < 1):
@@ -395,7 +404,8 @@ def run_cli(baseline: str, description: str | None = None):
     if fingerprint != DATASET_SHA256 or (len(ids), len(test_ids)) != (3101, 776):
         raise SystemExit('Expected the verified original SOS PALSAR release (3,101 train / 776 test)')
     cv2.setNumThreads(1)
-    work = ROOT / f"{'smoke' if args.smoke_steps else 'run'}-{args.baseline}"
+    default_work = f"{'smoke' if args.smoke_steps else 'run'}-{args.baseline}"
+    work = ROOT / (args.run_name or default_work)
     work.mkdir(exist_ok=True)
     with (work / '.lock').open('a') as lock:
         try:
